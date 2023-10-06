@@ -1,85 +1,68 @@
-# spotify-clone
-
+# Spotify-Clone 專案
 
 ## **簡介**
 
-這是一個全棧的串流應用。前端使用TypeScript和React，後端則採用Java。這個專案利用AWS Lambda來處理音樂串流，並使用Docker和Kubernetes進行容器化和部署。
+這是一個全棧的音樂串流應用。前端使用 TypeScript 和 React，後端則使用 Java 和 Spring 框架。本專案利用 AWS Lambda 來處理音樂的上傳和串流，並使用 Docker 進行容器化。
 
-## **功能**
+## **功能介紹**
 
-### 音樂播放
-- 使用AWS Lambda來處理音樂的上傳和串流。
-  - **為什麼使用Lambda**：Lambda能即時調整資源，適應不同量級的使用者需求。
-  
+### 音樂串流
+- 使用 AWS Lambda 來處理音樂的上傳和串流。
+  - **為什麼選擇 Lambda**：Lambda 能即時調整資源，滿足不同量級的使用者需求。
+
 ### 歌單管理
-- 可以創建、編輯和刪除個人歌單。
-  - **使用哪些工具**：React和TypeScript
-  - **為什麼**：TypeScript提供更好的型別檢查，使開發更加穩健。
+- 提供創建、編輯和刪除歌單的功能。
+  - **使用的技術**：TypeScript 的 Interface 和 React
+  - **為什麼選擇這些技術**：TypeScript 的 Interface 提供更好的型別檢查，使開發更加穩健。
 
 ### 使用者評價和評論
 - 使用者可以對歌曲和歌單進行評價和評論。
-  - **使用哪些工具**：React和TypeScript
-  
+  - **使用的技術**：TypeScript 的 Interface 和 React
+
 ### 實時通知
-- 使用WebSocket來實現實時通知。
-  - **為什麼使用WebSocket**：提供更流暢、即時的用戶體驗。
+- 使用 WebSocket 實現實時通知。
+  - **為什麼選擇 WebSocket**：提供更流暢、即時的使用者體驗。
 
 ## **技術棧**
 
 ### 前端
-- **TypeScript**
-  - **為什麼**：提供靜態型別，讓代碼更易於維護和偵錯。
-
+- **TypeScript 的 Interface**
+  - **優點**：提供靜態型別，讓代碼更易於維護和除錯。
 
 ### 後端
-- **Java**
-  - **為什麼**：Java是一種穩健、高性能的後端語言，特別適合大規模應用。
+- **Java 和 Spring 框架**
+  - **優點**：Java 是一種穩健、高性能的後端語言，特別適用於大型應用。
 
-### 雲端服務
+### 雲服務
 - **AWS Lambda**
-  - **為什麼**：無需預先分配資源，能即時擴展。
+  - **優點**：無需預先分配資源，可以即時擴展。
 
-### 容器化和部署
+### 容器化
 - **Docker**
-  - **為什麼**：Docker讓你能在不同的環境下確保一致性。
-- **Kubernetes**
-  - **為什麼**：在多節點的情況下，Kubernetes能自動處理負載均衡和服務發現。
+  - **優點**：確保在不同環境下的一致性。
 
-## **部署**
+## **部署步驟**
 
-### Docker
-1. 建立Dockerfile
-2. 執行 `docker build -t my-streaming-app .`
-3. 執行 `docker run -p 8080:8080 my-streaming-app`
+### 使用 Docker
+1. 建立 Dockerfile。
+2. 執行 `docker build -t my-streaming-app .`。
+3. 執行 `docker run -p 8080:8080 my-streaming-app`。
 
-### Kubernetes
-1. 建立Kubernetes配置文件
-2. 執行 `kubectl apply -f my-streaming-app.yaml`
-
-
-# Spotify-Clone 微服務架構
-
-## 微服務劃分
+## **微服務架構**
 
 ### 音樂串流服務
-- **責任**: 負責音樂的上傳、下載和串流。
+- **責任**：負責音樂的上傳、下載和串流。
 
 ### 用戶身份驗證服務
-- **責任**: 負責用戶註冊、登入和權限管理。
+- **責任**：負責用戶註冊、登入和權限管理。
 
 ### 歌單管理服務
-- **責任**: 負責歌單的創建、編輯和刪除。
+- **責任**：負責歌單的創建、編輯和刪除。
 
 ### 評價和評論服務
-- **責任**: 負責處理用戶對歌曲或歌單的評價和評論。
+- **責任**：負責處理用戶對歌曲或歌單的評價和評論。
 
 ### 通知服務
-- **責任**: 使用 WebSocket 實時更新用戶通知。
-
-## 技術棧
-
-- **後端**: 使用 Java 和 Spring Boot 來開發各個微服務。
-- **容器化**: 使用 Docker 進行容器化。
-- **部署和負載均衡**: 使用 Kubernetes。
+- **責任**：使用 WebSocket 實時更新用戶通知。
 
 
