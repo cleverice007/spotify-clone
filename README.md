@@ -55,8 +55,60 @@
 - **工具**: Docker 可以在這個階段被利用，以確保環境一致性。
 
 ## 基本後端架構
-- **為什麼**: 在有了基本的後端服務之後，前端才能進行相應的開發和測試。
-- **工具**: Java 和 Spring Boot。
+## 資料庫模型設計 （使用aws rds 的postgreSQL）
+
+### 用戶表（Users）
+
+- `id`: 唯一標識符，用於識別每個用戶。
+- `username`: 用戶名。
+- `email`: 電子郵件地址。
+- `password_hash`: 經過哈希處理的密碼。
+- `created_at`: 註冊日期。
+- `last_login`: 最後一次登入時間。
+
+### 歌單表（Playlists）
+
+- `id`: 唯一標識符，用於識別每個歌單。
+- `name`: 歌單名稱。
+- `user_id`: 用戶ID，表示哪個用戶創建了這個歌單。
+- `created_at`: 創建日期。
+
+### 歌曲表（Songs）
+
+- `id`: 唯一標識符，用於識別每首歌曲。
+- `title`: 歌曲名稱。
+- `artist`: 演唱者或樂團。
+- `duration`: 持續時間。
+- `file_path`: 存儲音樂文件的路徑。
+
+### 歌單和歌曲的多對多關係表（Playlist_Songs）
+
+- `playlist_id`: 歌單ID。
+- `song_id`: 歌曲ID
+
+## API 端點
+
+### 認證
+
+- `POST /auth/login`: 用戶登入
+- `POST /auth/signup`: 用戶註冊
+
+### 歌單管理
+
+- `POST /playlist/create`: 創建新的歌單
+- `PUT /playlist/update`: 更新現有歌單
+- `GET /playlist/:id`: 獲取指定歌單
+- `DELETE /playlist/:id`: 刪除指定歌單
+
+### 歌曲管理
+
+- `POST /song/upload`: 上傳新歌曲
+- `PUT /song/update/:id`: 更新現有歌曲
+- `GET /song/:id`: 獲取指定歌曲
+- `DELETE /song/:id`: 刪除指定歌曲
+
+
+
 
 ## 基本前端架構
 - **為什麼**: 一旦有了基本的後端，前端可以開始建構基礎頁面和元件。
