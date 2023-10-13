@@ -1,8 +1,10 @@
 import React, { useState, useEffect } from 'react';
-import { Album } from '../interfaces/MusicModels';
+import { Album,Song } from '../interfaces/MusicModels';
 import { getAllAlbums, getSongsInAlbum } from '../services/musicService'; 
 const AlbumGallery: React.FC = () => {
   const [albums, setAlbums] = useState<Album[]>([]);
+  const [currentSong, setCurrentSong] = useState<Song | null>(null); 
+  const [isPlaying, setIsPlaying] = useState<boolean>(false);
 
   useEffect(() => {
     const fetchAlbums = async () => {
@@ -14,7 +16,10 @@ const AlbumGallery: React.FC = () => {
   }, []);
   const handleAlbumClick = async (albumId: string) => {
     const songs = await getSongsInAlbum(albumId);
-    // TODO: 根據取得的歌曲播放音樂
+    if (songs.length > 0) { // 確保專輯裡有歌曲
+      setCurrentSong(songs[0]); // 設定第一首歌為當前播放歌曲
+      setIsPlaying(true); // 開始播放
+    }
   };
 
   return (
