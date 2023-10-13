@@ -57,36 +57,46 @@
 ## 基本後端架構
 ## 資料庫模型設計 （使用aws rds 的postgreSQL）
 
+## 資料庫設計
+
 ### 用戶表（Users）
 
-- `id`: 唯一標識符，用於識別每個用戶。
-- `username`: 用戶名。
-- `email`: 電子郵件地址。
-- `password_hash`: 經過哈希處理的密碼。
-- `created_at`: 註冊日期。
-- `last_login`: 最後一次登入時間。
+- `id`: 唯一標識符
+- `username`: 用戶名
+- `email`: 電子郵件地址
+- `password_hash`: 經過哈希處理的密碼
+- `created_at`: 註冊日期
+- `last_login`: 最後一次登入時間
 
 ### 歌單表（Playlists）
 
-- `id`: 唯一標識符，用於識別每個歌單。
-- `name`: 歌單名稱。
-- `user_id`: 用戶ID，表示哪個用戶創建了這個歌單。
-- `created_at`: 創建日期。
+- `id`: 唯一標識符
+- `name`: 歌單名稱
+- `user_id`: 用戶ID（外鍵）
+- `created_at`: 創建日期
+
+### 專輯表（Albums）
+
+- `id`: 唯一標識符
+- `title`: 專輯名稱
+- `artist`: 藝術家或樂隊
+- `created_at`: 發行日期
 
 ### 歌曲表（Songs）
 
-- `id`: 唯一標識符，用於識別每首歌曲。
-- `title`: 歌曲名稱。
-- `artist`: 演唱者或樂團。
-- `duration`: 持續時間。
-- `file_path`: 存儲音樂文件的路徑。
+- `id`: 唯一標識符
+- `title`: 歌曲名稱
+- `artist`: 藝術家或樂隊
+- `album_id`: 專輯ID（外鍵）
+- `duration`: 持續時間
+- `file_path`: 文件路徑
 
 ### 歌單和歌曲的多對多關係表（Playlist_Songs）
 
-- `playlist_id`: 歌單ID。
-- `song_id`: 歌曲ID
+- `playlist_id`: 歌單ID（外鍵）
+- `song_id`: 歌曲ID（外鍵）
 
-## API 端點
+## API 端點設計
 
 ### 認證
 
@@ -95,17 +105,34 @@
 
 ### 歌單管理
 
-- `POST /playlist/create`: 創建新的歌單
-- `PUT /playlist/update`: 更新現有歌單
-- `GET /playlist/:id`: 獲取指定歌單
-- `DELETE /playlist/:id`: 刪除指定歌單
+- `POST /playlists`: 創建新的歌單
+- `PUT /playlists/:id`: 更新現有歌單
+- `GET /playlists/:id`: 獲取指定歌單
+- `DELETE /playlists/:id`: 刪除指定歌單
+
+### 專輯管理
+
+- `POST /albums`: 創建新專輯
+- `PUT /albums/:id`: 更新現有專輯
+- `GET /albums/:id`: 獲取指定專輯
+- `DELETE /albums/:id`: 刪除指定專輯
 
 ### 歌曲管理
 
-- `POST /song/upload`: 上傳新歌曲
-- `PUT /song/update/:id`: 更新現有歌曲
-- `GET /song/:id`: 獲取指定歌曲
-- `DELETE /song/:id`: 刪除指定歌曲
+- `POST /songs`: 上傳新歌曲
+- `PUT /songs/:id`: 更新現有歌曲
+- `GET /songs/:id`: 獲取指定歌曲
+- `DELETE /songs/:id`: 刪除指定歌曲
+
+### 歌單和歌曲的關係
+
+- `POST /playlists/:playlist_id/songs`: 將歌曲添加到歌單
+- `DELETE /playlists/:playlist_id/songs/:song_id`: 從歌單中刪除歌曲
+
+### 專輯和歌曲的關係
+
+- `GET /albums/:album_id/songs`: 獲取專輯中的所有歌曲
+
 
 ### 測試策略
 
