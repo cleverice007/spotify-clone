@@ -14,3 +14,15 @@ export const getSongsInAlbum = async (albumId: string): Promise<Song[]> => {
     return [];
   }
 };
+
+
+// 獲得所有的專輯
+export const getAllAlbums = async (): Promise<Album[]> => {
+  try {
+    const response = await axios.get(`${API_URL}/albums`);
+    return response.data;
+  } catch (error) {
+    console.error("There was an error fetching the albums:", error);
+    return [];
+  }
+};
