@@ -5,6 +5,7 @@ export interface Song {
   albumId: string;
   duration: number;
   filePath: string;
+  albumCoverUrl: string;  // 專輯封面的URL
 }
 
 export interface Album {
