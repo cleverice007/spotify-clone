@@ -1,36 +1,19 @@
-import React, { useState, useEffect } from 'react';
+import React from 'react';
 import { Album, Song } from '../interfaces/MusicModels';
-import { getAllAlbums, getSongsInAlbum } from '../services/musicService'; 
 
-const AlbumGallery: React.FC = () => {
-  const [albums, setAlbums] = useState<Album[]>([]);
-  const [currentSong, setCurrentSong] = useState<Song | null>(null); 
-  const [isPlaying, setIsPlaying] = useState<boolean>(false);
-  
-  useEffect(() => {
-    const fetchAlbums = async () => {
-      const fetchedAlbums = await getAllAlbums();
-      setAlbums(fetchedAlbums);
-    };
+interface Props {
+  albums: Album[];
+  onAlbumClick: (albumId: string) => void;
+}
 
-    fetchAlbums();
-  }, []);
-
-  const handleAlbumClick = async (albumId: string) => {
-    const songs = await getSongsInAlbum(albumId);
-    if (songs.length > 0) { 
-      setCurrentSong(songs[0]);
-      setIsPlaying(true);
-    }
-  };
-
+const AlbumGallery: React.FC<Props> = ({ albums, onAlbumClick }) => {
   return (
     <div className="flex flex-wrap gap-4">
       {albums.map(album => (
         <div 
           key={album.id} 
           className="w-40 text-center" 
-          onClick={() => handleAlbumClick(album.id)}
+          onClick={() => onAlbumClick(album.id)}
         >
           <img src={album.coverUrl} alt={album.title} className="w-full rounded-md" />
           <div>{album.title}</div>
