@@ -1,9 +1,10 @@
 import React from 'react';
 import {
   BrowserRouter as Router,
-  Switch,
-  Route
+  Route,
+  Routes
 } from 'react-router-dom';
+
 import Home from './components/Home'; 
 
 class App extends React.Component {
@@ -11,16 +12,13 @@ class App extends React.Component {
       return (
         <Router>
           <div>
-            <Switch>
-              <Route path="/">
-                <Home />
-              </Route>
-            </Switch>
+            <Routes>
+              <Route path="/" element={<Home />} />
+            </Routes>
           </div>
         </Router>
       );
     }
-  }
-  
+}
 
 export default App;
