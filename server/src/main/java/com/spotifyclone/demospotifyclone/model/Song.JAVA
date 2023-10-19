@@ -1,4 +1,4 @@
-package com.spotifyclone.model;
+package com.spotifyclone.demospotifyclone.model;
 
 import javax.persistence.Entity;
 import javax.persistence.Id;
