@@ -1,9 +1,9 @@
-package com.spotifyclone.controller;
+package com.spotifyclone.demospotifyclone.controller;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
-import com.spotifyclone.repo.MusicRepo;
+import com.spotifyclone.demospotifyclone.repo.MusicRepo;
 
 @RestController
 public class MusicUploadController {

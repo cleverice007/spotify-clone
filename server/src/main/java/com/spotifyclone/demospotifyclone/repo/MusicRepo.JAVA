@@ -1,4 +1,4 @@
-package com.spotifyclone.repo;
+package com.spotifyclone.demospotifyclone.repo;
 
 import com.amazonaws.services.s3.AmazonS3;
 import com.amazonaws.services.s3.model.PutObjectRequest;
@@ -17,7 +17,7 @@ public class MusicRepo {
     private AmazonS3 s3Client;
 
     public String uploadFileToS3(MultipartFile file) {
-        String bucketName = "your-bucket-name";
+        String bucketName = "spotify-clone-mason";
         try {
             // Convert MultipartFile to File
             File fileObj = convertMultiPartFileToFile(file);
