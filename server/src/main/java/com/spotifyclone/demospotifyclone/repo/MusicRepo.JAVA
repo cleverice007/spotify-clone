@@ -1,31 +1,41 @@
 package com.spotifyclone.demospotifyclone.repo;
 
-import com.amazonaws.services.s3.AmazonS3;
-import com.amazonaws.services.s3.model.PutObjectRequest;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
 import org.springframework.web.multipart.MultipartFile;
+import software.amazon.awssdk.services.s3.S3Client;
+import software.amazon.awssdk.services.s3.model.PutObjectRequest;
+import software.amazon.awssdk.services.s3.model.PutObjectResponse;
 
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 
 @Repository
 public class MusicRepo {
 
     @Autowired
-    private AmazonS3 s3Client;
+    private S3Client s3Client;
 
     public String uploadFileToS3(MultipartFile file) {
         String bucketName = "spotify-clone-mason";
         try {
             // Convert MultipartFile to File
             File fileObj = convertMultiPartFileToFile(file);
+            Path filePath = Paths.get(fileObj.getAbsolutePath());
+
             String fileName = System.currentTimeMillis() + "_" + file.getOriginalFilename();
-            
+
             // Upload the file
-            s3Client.putObject(new PutObjectRequest(bucketName, fileName, fileObj));
-            
+            PutObjectRequest putObjectRequest = PutObjectRequest.builder()
+                    .bucket(bucketName)
+                    .key(fileName)
+                    .build();
+
+            PutObjectResponse response = s3Client.putObject(putObjectRequest, filePath);
+
             fileObj.delete();
             return "File uploaded : " + fileName;
         } catch (Exception e) {
