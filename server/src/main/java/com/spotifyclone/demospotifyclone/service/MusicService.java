@@ -1,12 +1,11 @@
 package com.spotifyclone.demospotifyclone.service;
 
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Repository;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 import software.amazon.awssdk.services.s3.S3Client;
 import software.amazon.awssdk.services.s3.model.PutObjectRequest;
-import software.amazon.awssdk.services.s3.model.PutObjectResponse;
+import java.util.Optional;
 
 import java.io.File;
 import java.io.FileOutputStream;
@@ -17,8 +16,8 @@ import java.util.UUID;
 
 import com.spotifyclone.demospotifyclone.model.Song;
 import com.spotifyclone.demospotifyclone.model.Album;
-import org.springframework.data.jpa.repository.JpaRepository;
-import com.spotifyclone.demospotifyclone.repo.SongRepository; // import SongRepository
+import com.spotifyclone.demospotifyclone.repo.AlbumRepository;
+import com.spotifyclone.demospotifyclone.repo.SongRepository;
 
 
 
@@ -31,22 +30,39 @@ public class MusicService {
     @Autowired
     private SongRepository songRepository;
 
+    @Autowired
+    private AlbumRepository albumRepository;
+
 
     public String uploadSongToDB(String id, String title, String artist, Integer duration, String filePath, String albumCoverUrl, Album album) {
         Song song = new Song();
-        song.setId(id != null ? id : UUID.randomUUID().toString()); // Generate ID if not provided
+        song.setId(id != null ? id : UUID.randomUUID().toString());
         song.setTitle(title);
         song.setArtist(artist);
         song.setDuration(duration);
         song.setFilePath(filePath);
         song.setAlbumCoverUrl(albumCoverUrl);
-        song.setAlbum(album); // Associate the song with the album
-
-        songRepository.save(song); // Save the song to the database
-
+    
+        // Check if the album already exists
+        Optional<Album> existingAlbum = albumRepository.findById(album.getId());
+        if (existingAlbum.isPresent()) {
+            // Use the existing album and add the song to it
+            Album existingAlbumEntity = existingAlbum.get();
+            existingAlbumEntity.addSong(song);
+            albumRepository.save(existingAlbumEntity);
+        } else {
+            // Create a new album and add the song to it
+            album.setId(album.getId() != null ? album.getId() : UUID.randomUUID().toString());
+            album.setTitle(album.getTitle());
+            album.setCoverUrl(albumCoverUrl);
+            album.addSong(song);
+            albumRepository.save(album);
+        }
+    
+        // Note: The song will be saved automatically due to the CascadeType.ALL setting in the Album entity
         return "Song uploaded to DB with ID: " + song.getId();
     }
-
+    
     public String uploadFileToS3(MultipartFile audioFile, MultipartFile coverFile) {
         String bucketName = "spotify-clone-mason";
 
