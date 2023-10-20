@@ -1,7 +1,8 @@
-package com.spotifyclone.demospotifyclone.repo;
+package com.spotifyclone.demospotifyclone.service;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
+import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 import software.amazon.awssdk.services.s3.S3Client;
 import software.amazon.awssdk.services.s3.model.PutObjectRequest;
@@ -20,14 +21,15 @@ import org.springframework.data.jpa.repository.JpaRepository;
 
 
 
-@Repository
-public class MusicRepo {
+@Service
+public class MusicService {
 
     @Autowired
     private S3Client s3Client;
 
     @Autowired
     private SongRepository songRepository;
+
 
     public String uploadSongToDB(String id, String title, String artist, Integer duration, String filePath, String albumCoverUrl, Album album) {
         Song song = new Song();
