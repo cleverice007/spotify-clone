@@ -18,6 +18,7 @@ import java.util.UUID;
 import com.spotifyclone.demospotifyclone.model.Song;
 import com.spotifyclone.demospotifyclone.model.Album;
 import org.springframework.data.jpa.repository.JpaRepository;
+import com.spotifyclone.demospotifyclone.repo.SongRepository; // import SongRepository
 
 
 
