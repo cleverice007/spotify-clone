@@ -12,6 +12,13 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.util.UUID;
+
+import com.spotifyclone.demospotifyclone.model.Song;
+import com.spotifyclone.demospotifyclone.model.Album;
+import org.springframework.data.jpa.repository.JpaRepository;
+
+
 
 @Repository
 public class MusicRepo {
@@ -19,25 +26,52 @@ public class MusicRepo {
     @Autowired
     private S3Client s3Client;
 
-    public String uploadFileToS3(MultipartFile file) {
+    @Autowired
+    private SongRepository songRepository;
+
+    public String uploadSongToDB(String id, String title, String artist, Integer duration, String filePath, String albumCoverUrl, Album album) {
+        Song song = new Song();
+        song.setId(id != null ? id : UUID.randomUUID().toString()); // Generate ID if not provided
+        song.setTitle(title);
+        song.setArtist(artist);
+        song.setDuration(duration);
+        song.setFilePath(filePath);
+        song.setAlbumCoverUrl(albumCoverUrl);
+        song.setAlbum(album); // Associate the song with the album
+
+        songRepository.save(song); // Save the song to the database
+
+        return "Song uploaded to DB with ID: " + song.getId();
+    }
+
+    public String uploadFileToS3(MultipartFile audioFile, MultipartFile coverFile) {
         String bucketName = "spotify-clone-mason";
+
+        // Upload audio file
+        String audioFileName = uploadSingleFileToS3(audioFile, bucketName);
+
+        // Upload cover image
+        String coverFileName = uploadSingleFileToS3(coverFile, bucketName);
+
+        return "Audio uploaded as: " + audioFileName + ", Cover uploaded as: " + coverFileName;
+    }
+
+    private String uploadSingleFileToS3(MultipartFile file, String bucketName) {
         try {
-            // Convert MultipartFile to File
             File fileObj = convertMultiPartFileToFile(file);
             Path filePath = Paths.get(fileObj.getAbsolutePath());
 
             String fileName = System.currentTimeMillis() + "_" + file.getOriginalFilename();
 
-            // Upload the file
             PutObjectRequest putObjectRequest = PutObjectRequest.builder()
                     .bucket(bucketName)
                     .key(fileName)
                     .build();
 
-            PutObjectResponse response = s3Client.putObject(putObjectRequest, filePath);
+            s3Client.putObject(putObjectRequest, filePath);
 
             fileObj.delete();
-            return "File uploaded : " + fileName;
+            return fileName;
         } catch (Exception e) {
             e.printStackTrace();
             return "Error occurred while uploading file.";
