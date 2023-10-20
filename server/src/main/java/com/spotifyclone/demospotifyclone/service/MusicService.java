@@ -33,8 +33,7 @@ public class MusicService {
     @Autowired
     private AlbumRepository albumRepository;
 
-
-    public String uploadSongToDB(String id, String title, String artist, Integer duration, String filePath, String albumCoverUrl, Album album) {
+    public String uploadSongToDB(String id, String title, String artist, Integer duration, String filePath, String albumCoverUrl, String albumId, String albumTitle) {
         Song song = new Song();
         song.setId(id != null ? id : UUID.randomUUID().toString());
         song.setTitle(title);
@@ -43,21 +42,18 @@ public class MusicService {
         song.setFilePath(filePath);
         song.setAlbumCoverUrl(albumCoverUrl);
     
-        // Check if the album already exists
-        Optional<Album> existingAlbum = albumRepository.findById(album.getId());
-        if (existingAlbum.isPresent()) {
-            // Use the existing album and add the song to it
-            Album existingAlbumEntity = existingAlbum.get();
-            existingAlbumEntity.addSong(song);
-            albumRepository.save(existingAlbumEntity);
-        } else {
-            // Create a new album and add the song to it
-            album.setId(album.getId() != null ? album.getId() : UUID.randomUUID().toString());
-            album.setTitle(album.getTitle());
-            album.setCoverUrl(albumCoverUrl);
-            album.addSong(song);
-            albumRepository.save(album);
-        }
+      // Check if the album already exists
+      Optional<Album> existingAlbum = albumRepository.findById(albumId);
+      Album album;
+      if (existingAlbum.isPresent()) {
+          album = existingAlbum.get();
+      } else {
+          album = new Album();
+          album.setId(albumId != null ? albumId : UUID.randomUUID().toString());
+          album.setTitle(albumTitle);
+      }
+      album.addSong(song);
+      albumRepository.save(album);
     
         // Note: The song will be saved automatically due to the CascadeType.ALL setting in the Album entity
         return "Song uploaded to DB with ID: " + song.getId();
