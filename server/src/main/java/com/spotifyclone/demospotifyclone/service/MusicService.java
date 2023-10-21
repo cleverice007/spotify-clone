@@ -125,4 +125,27 @@ public class MusicService {
 }
 
 }
+public List<Album> getAllAlbumsFromS3() {
+    List<Album> albums = new ArrayList<>();
     
+    ListObjectsRequest listObjects = ListObjectsRequest.builder()
+        .bucket("spotify-clone-mason")
+        .prefix("albums/") // 如果你在S3中有使用資料夾結構來存儲專輯
+        .build();
+
+    ListObjectsResponse res = s3Client.listObjects(listObjects);
+    for (S3Object content : res.contents()) {
+        // 在這裡，你需要有一個方法將S3的object轉化為你的Album對象
+        Album album = convertS3ObjectToAlbum(content);
+        albums.add(album);
+    }
+    return albums;
+}
+
+private Album convertS3ObjectToAlbum(S3Object s3Object) {
+    // 你的邏輯來將S3 object轉化為Album對象
+    Album album = new Album();
+    // 例如: album.setId(s3Object.key());
+    // 更多的轉化邏輯...
+    return album;
+}

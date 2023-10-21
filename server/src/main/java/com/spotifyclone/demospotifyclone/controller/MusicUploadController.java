@@ -1,6 +1,7 @@
 package com.spotifyclone.demospotifyclone.controller;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 import com.spotifyclone.demospotifyclone.service.MusicService;
@@ -30,4 +31,11 @@ public class MusicUploadController {
     
         return s3UploadStatus + " and " + dbUploadStatus;
     }    
+    @GetMapping("/albums")
+    public ResponseEntity<List<Album>> getAllAlbums() {
+        List<Album> albums = musicService.getAllAlbumsFromS3();
+    return ResponseEntity.ok(albums);
 }
+
+}
+
