@@ -23,20 +23,20 @@ public class MusicUploadController {
             @RequestParam("songTitle") String songTitle,
             @RequestParam("artist") String artist
     ) {
-        // Upload to S3
-        String s3UploadStatus = musicService.uploadFileToS3(audioFile, coverFile);
-    
+        // Upload to S3 with the album and song titles for structured organization
+        String s3UploadStatus = musicService.uploadFileToS3(audioFile, coverFile, albumTitle, songTitle);
+        
         // Upload to Database
-        // 注意：我們移除了duration參數
         String dbUploadStatus = musicService.uploadSongToDB(null, songTitle, artist, null, null,  albumTitle);
-    
+        
         return s3UploadStatus + " and " + dbUploadStatus;
-    }    
+    }
+    
     @GetMapping("/albums")
     public ResponseEntity<List<Album>> getAllAlbums() {
         List<Album> albums = musicService.getAllAlbumsFromS3();
-    return ResponseEntity.ok(albums);
-}
-
+        return ResponseEntity.ok(albums);
+    }
+    
 }
 

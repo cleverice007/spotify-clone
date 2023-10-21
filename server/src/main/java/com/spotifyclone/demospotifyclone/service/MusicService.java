@@ -4,6 +4,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 import software.amazon.awssdk.services.s3.S3Client;
+import software.amazon.awssdk.services.s3.model.CommonPrefix;
 import software.amazon.awssdk.services.s3.model.ListObjectsRequest;
 import software.amazon.awssdk.services.s3.model.ListObjectsResponse;
 import software.amazon.awssdk.services.s3.model.PutObjectRequest;
@@ -75,49 +76,49 @@ public class MusicService {
 
     
     
-    public String uploadFileToS3(MultipartFile audioFile, MultipartFile coverFile) {
-        String bucketName = "spotify-clone-mason";
+public String uploadFileToS3(MultipartFile audioFile, MultipartFile coverFile, String albumTitle, String songTitle) {
+    String bucketName = "spotify-clone-mason";
 
-        // Upload audio file
-        String audioFileName = uploadSingleFileToS3(audioFile, bucketName);
+    // Upload audio file
+    String audioPath = albumTitle + "/songs/" + songTitle + ".mp3";
+    String audioFileName = uploadSingleFileToS3(audioFile, bucketName, audioPath);
 
-        // Upload cover image
-        String coverFileName = uploadSingleFileToS3(coverFile, bucketName);
+    // Upload cover image
+    String coverPath = albumTitle + "/cover/cover.jpg";
+    String coverFileName = uploadSingleFileToS3(coverFile, bucketName, coverPath);
 
-        return "Audio uploaded as: " + audioFileName + ", Cover uploaded as: " + coverFileName;
+    return "Audio uploaded as: " + audioFileName + ", Cover uploaded as: " + coverFileName;
+}
+
+private String uploadSingleFileToS3(MultipartFile file, String bucketName, String s3Path) {
+    try {
+        File fileObj = convertMultiPartFileToFile(file);
+        Path filePath = Paths.get(fileObj.getAbsolutePath());
+
+        PutObjectRequest putObjectRequest = PutObjectRequest.builder()
+                .bucket(bucketName)
+                .key(s3Path)
+                .build();
+
+        s3Client.putObject(putObjectRequest, filePath);
+
+        fileObj.delete();
+        return s3Path;  // 返回完整的S3路徑
+    } catch (Exception e) {
+        e.printStackTrace();
+        return "Error occurred while uploading file.";
     }
+}
 
-    private String uploadSingleFileToS3(MultipartFile file, String bucketName) {
-        try {
-            File fileObj = convertMultiPartFileToFile(file);
-            Path filePath = Paths.get(fileObj.getAbsolutePath());
-
-            String fileName = System.currentTimeMillis() + "_" + file.getOriginalFilename();
-
-            PutObjectRequest putObjectRequest = PutObjectRequest.builder()
-                    .bucket(bucketName)
-                    .key(fileName)
-                    .build();
-
-            s3Client.putObject(putObjectRequest, filePath);
-
-            fileObj.delete();
-            return fileName;
-        } catch (Exception e) {
-            e.printStackTrace();
-            return "Error occurred while uploading file.";
-        }
+private File convertMultiPartFileToFile(MultipartFile file) {
+    File fileObj = new File(file.getOriginalFilename());
+    try (FileOutputStream outputStream = new FileOutputStream(fileObj)) {
+        outputStream.write(file.getBytes());
+    } catch (IOException e) {
+        e.printStackTrace();
     }
-
-    private File convertMultiPartFileToFile(MultipartFile file) {
-        File fileObj = new File(file.getOriginalFilename());
-        try (FileOutputStream outputStream = new FileOutputStream(fileObj)) {
-            outputStream.write(file.getBytes());
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-        return fileObj;
-    }
+    return fileObj;
+}
 
         // 獲得音樂長度
     private int getMusicDuration(String videoPath) {
@@ -134,26 +135,46 @@ public class MusicService {
 
 public List<Album> getAllAlbumsFromS3() {
     List<Album> albums = new ArrayList<>();
-    
+
     ListObjectsRequest listObjects = ListObjectsRequest.builder()
         .bucket("spotify-clone-mason")
-        .prefix("albums/") // 如果你在S3中有使用資料夾結構來存儲專輯
+        .prefix("albums/") 
+        .delimiter("/") // 使用delimiter來獲取專輯資料夾
         .build();
 
     ListObjectsResponse res = s3Client.listObjects(listObjects);
-    for (S3Object content : res.contents()) {
-        // 在這裡，你需要有一個方法將S3的object轉化為你的Album對象
-        Album album = convertS3ObjectToAlbum(content);
+    for (CommonPrefix prefix : res.commonPrefixes()) { // 使用commonPrefixes獲取所有的專輯資料夾
+        Album album = getAlbumDetailsFromS3(prefix.prefix());
         albums.add(album);
     }
     return albums;
 }
 
-private Album convertS3ObjectToAlbum(S3Object s3Object) {
-    // 你的邏輯來將S3 object轉化為Album對象
+private Album getAlbumDetailsFromS3(String albumPrefix) {
+    List<String> songUrls = new ArrayList<>();
+    String coverUrl = null;
+
+    ListObjectsRequest listObjects = ListObjectsRequest.builder()
+        .bucket("spotify-clone-mason")
+        .prefix(albumPrefix)
+        .build();
+
+    ListObjectsResponse res = s3Client.listObjects(listObjects);
+    for (S3Object content : res.contents()) {
+        String key = content.key();
+        if (key.endsWith(".mp3")) {
+            songUrls.add("https://s3-region.amazonaws.com/spotify-clone-mason/" + key); // 此URL可能需要調整
+        } else if (key.endsWith("cover/cover.jpg")) {
+            coverUrl = "https://s3-region.amazonaws.com/spotify-clone-mason/" + key;
+        }
+    }
+
     Album album = new Album();
-    // 例如: album.setId(s3Object.key());
-    // 更多的轉化邏輯...
+    album.setSongs(songUrls);
+    album.setCoverUrl(coverUrl);
+    // 你可以在這裡根據 albumPrefix 解析專輯名稱
+
     return album;
 }
+
 }
