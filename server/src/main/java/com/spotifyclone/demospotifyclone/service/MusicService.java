@@ -4,7 +4,12 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 import software.amazon.awssdk.services.s3.S3Client;
+import software.amazon.awssdk.services.s3.model.ListObjectsRequest;
+import software.amazon.awssdk.services.s3.model.ListObjectsResponse;
 import software.amazon.awssdk.services.s3.model.PutObjectRequest;
+import software.amazon.awssdk.services.s3.model.S3Object;
+
+import java.util.ArrayList;
 import java.util.Optional;
 
 import java.io.File;
@@ -13,6 +18,8 @@ import java.io.IOException;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.UUID;
+import java.util.List;
+import java.util.ArrayList;
 
 import com.spotifyclone.demospotifyclone.model.Song;
 import com.spotifyclone.demospotifyclone.model.Album;
@@ -34,37 +41,38 @@ public class MusicService {
     @Autowired
     private AlbumRepository albumRepository;
 
-    public String uploadSongToDB(String id, String title, String artist, String filePath, String albumCoverUrl, String albumId, String albumTitle) {
-        Song song = new Song();
-        song.setId(id != null ? id : UUID.randomUUID().toString());
-        song.setTitle(title);
-        song.setArtist(artist);
-        
-        // 使用getMusicDuration計算歌曲的持續時間
-        int duration = getMusicDuration(filePath);
-        if (duration == -1) {
-            return "Error occurred while calculating song duration.";
-        }
-        song.setDuration(duration);
-        
-        song.setFilePath(filePath);
-        song.setAlbumCoverUrl(albumCoverUrl);
+   public String uploadSongToDB(String id, String title, String artist, String filePath, String albumCoverUrl, String albumTitle) {
+    Song song = new Song();
+    song.setId(id != null ? id : UUID.randomUUID().toString());
+    song.setTitle(title);
+    song.setArtist(artist);
     
-        // 檢查專輯是否已存在
-        Optional<Album> existingAlbum = albumRepository.findById(albumId);
-        Album album;
-        if (existingAlbum.isPresent()) {
-            album = existingAlbum.get();
-        } else {
-            album = new Album();
-            album.setId(albumId != null ? albumId : UUID.randomUUID().toString());
-            album.setTitle(albumTitle);
-        }
-        album.addSong(song);
-        albumRepository.save(album);
-    
-        return "Song uploaded to DB with ID: " + song.getId();
+    // 使用getMusicDuration計算歌曲的持續時間
+    int duration = getMusicDuration(filePath);
+    if (duration == -1) {
+        return "Error occurred while calculating song duration.";
     }
+    song.setDuration(duration);
+    
+    song.setFilePath(filePath);
+    song.setAlbumCoverUrl(albumCoverUrl);
+
+    // 檢查專輯是否已存在
+    Optional<Album> existingAlbum = albumRepository.findByTitle(albumTitle);
+    Album album;
+    if (existingAlbum.isPresent()) {
+        album = existingAlbum.get();
+    } else {
+        album = new Album();
+        album.setId(UUID.randomUUID().toString());
+        album.setTitle(albumTitle);
+    }
+    album.addSong(song);
+    albumRepository.save(album);
+
+    return "Song uploaded to DB with ID: " + song.getId();
+}
+
     
     
     public String uploadFileToS3(MultipartFile audioFile, MultipartFile coverFile) {
@@ -124,7 +132,6 @@ public class MusicService {
     }
 }
 
-}
 public List<Album> getAllAlbumsFromS3() {
     List<Album> albums = new ArrayList<>();
     
@@ -148,4 +155,5 @@ private Album convertS3ObjectToAlbum(S3Object s3Object) {
     // 例如: album.setId(s3Object.key());
     // 更多的轉化邏輯...
     return album;
+}
 }

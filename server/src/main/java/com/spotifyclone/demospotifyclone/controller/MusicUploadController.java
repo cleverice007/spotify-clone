@@ -6,6 +6,8 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 import com.spotifyclone.demospotifyclone.service.MusicService;
 import com.spotifyclone.demospotifyclone.model.Album;
+import java.util.List;
+
 
 @RestController
 public class MusicUploadController {
@@ -18,7 +20,6 @@ public class MusicUploadController {
             @RequestParam("audioFile") MultipartFile audioFile,
             @RequestParam("coverFile") MultipartFile coverFile,
             @RequestParam("albumTitle") String albumTitle,
-            @RequestParam(value = "albumId", required = false) String albumId,
             @RequestParam("songTitle") String songTitle,
             @RequestParam("artist") String artist
     ) {
@@ -27,7 +28,7 @@ public class MusicUploadController {
     
         // Upload to Database
         // 注意：我們移除了duration參數
-        String dbUploadStatus = musicService.uploadSongToDB(null, songTitle, artist, null, null, albumId, albumTitle);
+        String dbUploadStatus = musicService.uploadSongToDB(null, songTitle, artist, null, null,  albumTitle);
     
         return s3UploadStatus + " and " + dbUploadStatus;
     }    
