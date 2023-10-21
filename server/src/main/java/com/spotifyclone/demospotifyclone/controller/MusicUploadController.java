@@ -19,15 +19,15 @@ public class MusicUploadController {
             @RequestParam("albumTitle") String albumTitle,
             @RequestParam(value = "albumId", required = false) String albumId,
             @RequestParam("songTitle") String songTitle,
-            @RequestParam("artist") String artist,
-            @RequestParam("duration") Integer duration
+            @RequestParam("artist") String artist
     ) {
         // Upload to S3
         String s3UploadStatus = musicService.uploadFileToS3(audioFile, coverFile);
-
+    
         // Upload to Database
-        String dbUploadStatus = musicService.uploadSongToDB(null, songTitle, artist, duration, null, null, albumId, albumTitle);
-
+        // 注意：我們移除了duration參數
+        String dbUploadStatus = musicService.uploadSongToDB(null, songTitle, artist, null, null, albumId, albumTitle);
+    
         return s3UploadStatus + " and " + dbUploadStatus;
-    }
+    }    
 }

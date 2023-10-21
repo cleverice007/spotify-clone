@@ -30,25 +30,23 @@ export const getAllAlbums = async (): Promise<Album[]> => {
 export const uploadSong = async (songData: {
   title: string,
   artist: string,
-  duration: number,
   filePath: File,
   albumTitle: string,
   albumCoverUrl: File
 }) => {
-const formData = new FormData();
+  const formData = new FormData();
 
-formData.append("audioFile", songData.filePath);
-formData.append("coverFile", songData.albumCoverUrl);
-formData.append("albumTitle", songData.albumTitle);
-formData.append("songTitle", songData.title);
-formData.append("artist", songData.artist);
-formData.append("duration", songData.duration.toString());
+  formData.append("audioFile", songData.filePath);
+  formData.append("coverFile", songData.albumCoverUrl);
+  formData.append("albumTitle", songData.albumTitle);
+  formData.append("songTitle", songData.title);
+  formData.append("artist", songData.artist);
 
-try {
-  const response = await axios.post(`${API_URL}/upload`, formData);
-  return response.data;
-} catch (error) {
-  console.error("Error uploading song:", error);
-  throw error;
-}
+  try {
+    const response = await axios.post(`${API_URL}/upload`, formData);
+    return response.data;
+  } catch (error) {
+    console.error("Error uploading song:", error);
+    throw error;
+  }
 };

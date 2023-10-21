@@ -29,7 +29,6 @@ function UploadForm() {
         const songData = {
           title: titleRef.current.value,
           artist: artistRef.current.value,
-          duration: 0,
           filePath: fileRef.current.files[0], 
           albumTitle: albumTitleRef.current.value,
           albumCoverUrl: coverRef.current.files[0]
