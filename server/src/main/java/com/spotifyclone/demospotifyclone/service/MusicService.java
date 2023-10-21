@@ -19,6 +19,7 @@ import com.spotifyclone.demospotifyclone.model.Album;
 import com.spotifyclone.demospotifyclone.repo.AlbumRepository;
 import com.spotifyclone.demospotifyclone.repo.SongRepository;
 
+import org.bytedeco.javacv.FFmpegFrameGrabber;
 
 
 @Service
@@ -33,31 +34,38 @@ public class MusicService {
     @Autowired
     private AlbumRepository albumRepository;
 
-    public String uploadSongToDB(String id, String title, String artist, Integer duration, String filePath, String albumCoverUrl, String albumId, String albumTitle) {
+    public String uploadSongToDB(String id, String title, String artist, String filePath, String albumCoverUrl, String albumId, String albumTitle) {
         Song song = new Song();
         song.setId(id != null ? id : UUID.randomUUID().toString());
         song.setTitle(title);
         song.setArtist(artist);
+        
+        // 使用getMusicDuration計算歌曲的持續時間
+        int duration = getMusicDuration(filePath);
+        if (duration == -1) {
+            return "Error occurred while calculating song duration.";
+        }
         song.setDuration(duration);
+        
         song.setFilePath(filePath);
         song.setAlbumCoverUrl(albumCoverUrl);
     
-      // Check if the album already exists
-      Optional<Album> existingAlbum = albumRepository.findById(albumId);
-      Album album;
-      if (existingAlbum.isPresent()) {
-          album = existingAlbum.get();
-      } else {
-          album = new Album();
-          album.setId(albumId != null ? albumId : UUID.randomUUID().toString());
-          album.setTitle(albumTitle);
-      }
-      album.addSong(song);
-      albumRepository.save(album);
+        // 檢查專輯是否已存在
+        Optional<Album> existingAlbum = albumRepository.findById(albumId);
+        Album album;
+        if (existingAlbum.isPresent()) {
+            album = existingAlbum.get();
+        } else {
+            album = new Album();
+            album.setId(albumId != null ? albumId : UUID.randomUUID().toString());
+            album.setTitle(albumTitle);
+        }
+        album.addSong(song);
+        albumRepository.save(album);
     
-        // Note: The song will be saved automatically due to the CascadeType.ALL setting in the Album entity
         return "Song uploaded to DB with ID: " + song.getId();
     }
+    
     
     public String uploadFileToS3(MultipartFile audioFile, MultipartFile coverFile) {
         String bucketName = "spotify-clone-mason";
@@ -102,4 +110,19 @@ public class MusicService {
         }
         return fileObj;
     }
+
+        // 獲得音樂長度
+    private int getMusicDuration(String videoPath) {
+    try (FFmpegFrameGrabber grabber = new FFmpegFrameGrabber(videoPath)) {
+        grabber.start();
+        int lengthInSeconds = (int) (grabber.getLengthInTime() / (1000 * 1000));
+        grabber.stop();
+        return lengthInSeconds;
+    } catch (Exception e) {
+        e.printStackTrace();
+        return -1; // 或其他表示錯誤的值
+    }
 }
+
+}
+    

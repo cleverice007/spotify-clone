@@ -45,6 +45,14 @@
 			<artifactId>mysql-connector-java</artifactId>
 			<version>8.0.26</version>
 		</dependency>
+		<!-- JavaCV dependency -->
+		<dependency>
+    		<groupId>org.bytedeco</groupId>
+    		<artifactId>javacv</artifactId>
+    		<version>1.5.6</version>
+		</dependency>
+
+		
 		<!-- AWS SDK v2 dependencies -->
 		<dependency>
 			<groupId>software.amazon.awssdk</groupId>

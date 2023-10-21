@@ -1,5 +1,4 @@
 import { useRef } from "react";
-import { getDuration } from "../services/getDuration";
 import { uploadSong } from "../services/musicService"; 
 
 
@@ -26,13 +25,11 @@ function UploadForm() {
           // 如果任何一個 ref 是 null，則直接返回，不繼續執行
           return;
         }
-      
-        const duration = await getDuration(fileRef.current.files[0]);
-        
+              
         const songData = {
           title: titleRef.current.value,
           artist: artistRef.current.value,
-          duration: duration,
+          duration: 0,
           filePath: fileRef.current.files[0], 
           albumTitle: albumTitleRef.current.value,
           albumCoverUrl: coverRef.current.files[0]
