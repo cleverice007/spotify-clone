@@ -138,7 +138,6 @@ public List<Album> getAllAlbumsFromS3() {
 
     ListObjectsRequest listObjects = ListObjectsRequest.builder()
         .bucket("spotify-clone-mason")
-        .prefix("albums/") 
         .delimiter("/") // 使用delimiter來獲取專輯資料夾
         .build();
 
