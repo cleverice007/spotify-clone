@@ -133,47 +133,13 @@ private File convertMultiPartFileToFile(MultipartFile file) {
     }
 }
 
-public List<Album> getAllAlbumsFromS3() {
-    List<Album> albums = new ArrayList<>();
-
-    ListObjectsRequest listObjects = ListObjectsRequest.builder()
-        .bucket("spotify-clone-mason")
-        .delimiter("/") // 使用delimiter來獲取專輯資料夾
-        .build();
-
-    ListObjectsResponse res = s3Client.listObjects(listObjects);
-    for (CommonPrefix prefix : res.commonPrefixes()) { // 使用commonPrefixes獲取所有的專輯資料夾
-        Album album = getAlbumDetailsFromS3(prefix.prefix());
-        albums.add(album);
+public List<Album> getAllAlbums() {
+    List<Album> albums = albumRepository.findAll();
+    for (Album album : albums) {
+        album.getSongs().size();  
     }
     return albums;
 }
 
-private Album getAlbumDetailsFromS3(String albumPrefix) {
-    List<String> songUrls = new ArrayList<>();
-    String coverUrl = null;
-
-    ListObjectsRequest listObjects = ListObjectsRequest.builder()
-        .bucket("spotify-clone-mason")
-        .prefix(albumPrefix)
-        .build();
-
-    ListObjectsResponse res = s3Client.listObjects(listObjects);
-    for (S3Object content : res.contents()) {
-        String key = content.key();
-        if (key.endsWith(".mp3")) {
-            songUrls.add("https://s3-region.amazonaws.com/spotify-clone-mason/" + key); // 此URL可能需要調整
-        } else if (key.endsWith("cover/cover.jpg")) {
-            coverUrl = "https://s3-region.amazonaws.com/spotify-clone-mason/" + key;
-        }
-    }
-
-    Album album = new Album();
-    album.setSongs(songUrls);
-    album.setCoverUrl(coverUrl);
-    // 你可以在這裡根據 albumPrefix 解析專輯名稱
-
-    return album;
-}
 
 }

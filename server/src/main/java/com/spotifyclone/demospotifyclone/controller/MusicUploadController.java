@@ -34,7 +34,7 @@ public class MusicUploadController {
     
     @GetMapping("/albums")
     public ResponseEntity<List<Album>> getAllAlbums() {
-        List<Album> albums = musicService.getAllAlbumsFromS3();
+        List<Album> albums = musicService.getAllAlbums();
         return ResponseEntity.ok(albums);
     }
     
