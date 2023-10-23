@@ -1,6 +1,7 @@
 package com.spotifyclone.demospotifyclone.service;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 import software.amazon.awssdk.services.s3.S3Client;
@@ -35,6 +36,12 @@ public class MusicService {
 
     @Autowired
     private S3Client s3Client;
+
+    @Autowired
+    @Value("${s3.bucket.name}")
+    private String bucketName;
+
+
 
     @Autowired
     private SongRepository songRepository;
@@ -77,7 +84,6 @@ public class MusicService {
     
     
 public String uploadFileToS3(MultipartFile audioFile, MultipartFile coverFile, String albumTitle, String songTitle) {
-    String bucketName = "spotify-clone-mason";
 
     // Upload audio file
     String audioPath = albumTitle + "/songs/" + songTitle + ".mp3";
