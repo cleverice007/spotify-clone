@@ -38,7 +38,7 @@ public class MusicService {
     private S3Client s3Client;
 
     @Autowired
-    @Value("${s3.bucket.name}")
+    @Value("${aws.s3.bucket-name}")
     private String bucketName;
 
 
