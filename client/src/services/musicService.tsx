@@ -67,3 +67,20 @@ export const uploadSong = async (songData: {
     throw error;
   }
 };
+
+
+export const getPresignedUrl = async (albumTitle: string, songTitle: string) => {
+  const endpoint = '<YOUR_LAMBDA_ENDPOINT>'; // 替換成您的Lambda endpoint
+  const data = {
+      albumTitle: albumTitle,
+      songTitle: songTitle,
+  };
+
+  try {
+      const response = await axios.post(endpoint, data);
+      return response.data; // 預先簽名的URL應該在response的data中
+  } catch (error) {
+      console.error("Error fetching presigned URL: ", error);
+      throw error;
+  }
+};

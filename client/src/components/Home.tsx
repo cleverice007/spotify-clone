@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { Album, Song } from '../interfaces/MusicModels';
-import { getAllAlbums, getSongsInAlbum } from '../services/musicService';
+import { getAllAlbums, getSongsInAlbum, getPresignedUrl } from '../services/musicService';
 import AlbumGallery from './AlbumGallery';
 import PlaybackBar from './PlaybackBar';
 
@@ -8,6 +8,7 @@ const Home: React.FC = () => {
   const [albums, setAlbums] = useState<Album[]>([]);
   const [currentSong, setCurrentSong] = useState<Song | null>(null);
   const [isPlaying, setIsPlaying] = useState<boolean>(false);
+  const [presignedUrl, setPresignedUrl] = useState<string>("");
 
   useEffect(() => {
     const fetchAlbums = async () => {
@@ -16,6 +17,19 @@ const Home: React.FC = () => {
     };
 
     fetchAlbums();
+  }, []);
+
+  useEffect(() => {
+    const fetchPresignedUrl = async () => {
+        try {
+            const url = await getPresignedUrl("AlbumSample", "SongSample");
+            setPresignedUrl(url);
+        } catch (error) {
+            console.error("Error fetching presigned URL on /home: ", error);
+        }
+    };
+
+    fetchPresignedUrl();
   }, []);
 
   const handleAlbumClick = async (albumId: string) => {
