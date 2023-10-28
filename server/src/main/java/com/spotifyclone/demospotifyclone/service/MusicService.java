@@ -10,6 +10,10 @@ import software.amazon.awssdk.services.s3.model.ListObjectsRequest;
 import software.amazon.awssdk.services.s3.model.ListObjectsResponse;
 import software.amazon.awssdk.services.s3.model.PutObjectRequest;
 import software.amazon.awssdk.services.s3.model.S3Object;
+import software.amazon.awssdk.services.s3.presigner.S3Presigner;
+import software.amazon.awssdk.services.s3.presigner.model.PresignedPutObjectRequest;
+import java.time.Duration;
+
 
 import java.util.ArrayList;
 import java.util.Optional;
@@ -51,7 +55,28 @@ public class MusicService {
     @Autowired
     private AlbumRepository albumRepository;
 
-   public String uploadSongToDB(String id, String title, String artist, String filePath, String albumCoverUrl, String albumTitle) {
+   // 獲取預先簽名的URL以供上傳
+   public String getPresignedUrlForUpload(String albumTitle, String songTitle) {
+    String s3Path = albumTitle + "/songs/" + songTitle + ".mp3";
+    
+    PutObjectRequest putObjectRequest = PutObjectRequest.builder()
+            .bucket(bucketName)
+            .key(s3Path)
+            .build();
+
+    S3Presigner presigner = S3Presigner.builder().build();
+
+    PresignedPutObjectRequest presignedRequest = presigner.presignPutObject(b -> b.putObjectRequest(putObjectRequest).signatureDuration(Duration.ofMinutes(15)));
+
+    String presignedUrl = presignedRequest.url().toString();
+
+    presigner.close(); // 關閉presigner資源
+
+    return presignedUrl;
+}
+
+// 上傳歌曲信息到數據庫
+public String uploadSongToDB(String id, String title, String artist, String filePath, String albumCoverUrl, String albumTitle) {
     Song song = new Song();
     song.setId(id != null ? id : UUID.randomUUID().toString());
     song.setTitle(title);
@@ -82,38 +107,6 @@ public class MusicService {
 
     return "Song uploaded to DB with ID: " + song.getId();
 }
-public String uploadFileToS3(String base64Audio, String base64Cover, String albumTitle, String songTitle) {
-    // Upload audio file
-    String audioPath = albumTitle + "/songs/" + songTitle + ".mp3";
-    String audioFileName = uploadBase64ToS3(base64Audio, bucketName, audioPath);
-
-    // Upload cover image
-    String coverPath = albumTitle + "/cover/cover.jpg";
-    String coverFileName = uploadBase64ToS3(base64Cover, bucketName, coverPath);
-
-    return "Audio uploaded as: " + audioFileName + ", Cover uploaded as: " + coverFileName;
-}
-
-private String uploadBase64ToS3(String base64Data, String bucketName, String s3Path) {
-    try {
-        byte[] fileData = Base64.getDecoder().decode(base64Data);
-
-        PutObjectRequest putObjectRequest = PutObjectRequest.builder()
-                .bucket(bucketName)
-                .key(s3Path)
-                .build();
-
-        s3Client.putObject(putObjectRequest, RequestBody.fromBytes(fileData));
-
-        return s3Path;  // 返回完整的S3路徑
-    } catch (Exception e) {
-        e.printStackTrace();
-        return "Error occurred while uploading file.";
-    }
-}
-
-    
-    
 
 
         // 獲得音樂長度
