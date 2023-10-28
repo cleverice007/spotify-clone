@@ -56,9 +56,18 @@ public class MusicService {
     private AlbumRepository albumRepository;
 
    // 獲取預先簽名的URL以供上傳
-   public String getPresignedUrlForUpload(String albumTitle, String songTitle) {
+   public String getPresignedUrlForSongUpload(String albumTitle, String songTitle) {
     String s3Path = albumTitle + "/songs/" + songTitle + ".mp3";
     
+    return generatePresignedUrl(s3Path);
+}
+public String getPresignedUrlForCoverUpload(String albumTitle) {
+    String s3Path = albumTitle + "/cover.jpg";
+    
+    return generatePresignedUrl(s3Path);
+}
+
+private String generatePresignedUrl(String s3Path) {
     PutObjectRequest putObjectRequest = PutObjectRequest.builder()
             .bucket(bucketName)
             .key(s3Path)
@@ -74,6 +83,7 @@ public class MusicService {
 
     return presignedUrl;
 }
+
 
 // 上傳歌曲信息到數據庫
 public String uploadSongToDB(String id, String title, String artist, String filePath, String albumCoverUrl, String albumTitle) {
