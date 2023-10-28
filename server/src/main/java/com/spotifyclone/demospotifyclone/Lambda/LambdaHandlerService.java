@@ -2,51 +2,53 @@ package com.spotifyclone.demospotifyclone.Lambda;
 
 import com.amazonaws.services.lambda.runtime.Context;
 import com.amazonaws.services.lambda.runtime.RequestHandler;
-import org.springframework.web.multipart.MultipartFile;
 import com.spotifyclone.demospotifyclone.model.Album;
 import com.spotifyclone.demospotifyclone.service.MusicService;
-
 import java.util.List;
 import java.util.Map;
 
-class LambdaHandlers {
+ class LambdaHandlers {
 
-    private static MusicService musicService = new MusicService();
+    private static final MusicService musicService = new MusicService();
 
-    public static class UploadSongLambdaHandler implements RequestHandler<Map<String, Object>, String> {
-
-    @Override
-    public String handleRequest(Map<String, Object> input, Context context) {
-        // 從input中提取所需的參數，然後調用handleUploadSong方法
-        String base64Audio = (String) input.get("audioFile");
-        String base64Cover = (String) input.get("coverFile");
-        String albumTitle = (String) input.get("albumTitle");
-        String songTitle = (String) input.get("songTitle");
+    // Lambda Handler 用於獲取預先簽名的URL
+    public static class GetPresignedUrlLambdaHandler implements RequestHandler<Map<String, Object>, String> {
         
-        return handleUploadSong(base64Audio, base64Cover, albumTitle, songTitle);
+        @Override
+        public String handleRequest(Map<String, Object> input, Context context) {
+            String albumTitle = (String) input.get("albumTitle");
+            String songTitle = (String) input.get("songTitle");
+            
+            return musicService.getPresignedUrlForUpload(albumTitle, songTitle);
+        }
     }
 
-    public String handleUploadSong(String base64Audio, String base64Cover, String albumTitle, String songTitle) {
-        return musicService.uploadFileToS3(base64Audio, base64Cover, albumTitle, songTitle);
+    // Lambda Handler 用於將歌曲信息上傳到數據庫
+    public static class SaveSongToDbLambdaHandler implements RequestHandler<Map<String, Object>, String> {
+
+        @Override
+        public String handleRequest(Map<String, Object> input, Context context) {
+            String songId = (String) input.get("songId");
+            String title = (String) input.get("title");
+            String artist = (String) input.get("artist");
+            String filePath = (String) input.get("filePath");  // 此filePath應該是S3中的文件路徑
+            String albumCoverUrl = (String) input.get("albumCoverUrl");  // 若封面也上傳到S3，此處也應該是S3的URL
+            String albumTitle = (String) input.get("albumTitle");
+            
+            return musicService.uploadSongToDB(songId, title, artist, filePath, albumCoverUrl, albumTitle);
+        }
     }
-}
+
 
     public static class GetAllAlbumsLambdaHandler implements RequestHandler<Map<String, Object>, String> {
 
         @Override
         public String handleRequest(Map<String, Object> input, Context context) {
-            List<Album> albums = handleGetAllAlbums();
-            // 將結果轉換為JSON字符串或其他適當的格式返回
+            List<Album> albums = musicService.getAllAlbums();
             return albums.toString();
-        }
-
-        public List<Album> handleGetAllAlbums() {
-            return musicService.getAllAlbums();
         }
     }
 }
-
-
 
 /*
  * package com.spotifyclone.demospotifyclone;
