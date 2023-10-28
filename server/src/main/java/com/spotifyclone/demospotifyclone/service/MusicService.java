@@ -29,6 +29,8 @@ import com.spotifyclone.demospotifyclone.repo.AlbumRepository;
 import com.spotifyclone.demospotifyclone.repo.SongRepository;
 
 import org.bytedeco.javacv.FFmpegFrameGrabber;
+import java.util.Base64;
+import software.amazon.awssdk.core.sync.RequestBody;
 
 
 @Service
@@ -80,35 +82,29 @@ public class MusicService {
 
     return "Song uploaded to DB with ID: " + song.getId();
 }
-
-    
-    
-public String uploadFileToS3(MultipartFile audioFile, MultipartFile coverFile, String albumTitle, String songTitle) {
-
+public String uploadFileToS3(String base64Audio, String base64Cover, String albumTitle, String songTitle) {
     // Upload audio file
     String audioPath = albumTitle + "/songs/" + songTitle + ".mp3";
-    String audioFileName = uploadSingleFileToS3(audioFile, bucketName, audioPath);
+    String audioFileName = uploadBase64ToS3(base64Audio, bucketName, audioPath);
 
     // Upload cover image
     String coverPath = albumTitle + "/cover/cover.jpg";
-    String coverFileName = uploadSingleFileToS3(coverFile, bucketName, coverPath);
+    String coverFileName = uploadBase64ToS3(base64Cover, bucketName, coverPath);
 
     return "Audio uploaded as: " + audioFileName + ", Cover uploaded as: " + coverFileName;
 }
 
-private String uploadSingleFileToS3(MultipartFile file, String bucketName, String s3Path) {
+private String uploadBase64ToS3(String base64Data, String bucketName, String s3Path) {
     try {
-        File fileObj = convertMultiPartFileToFile(file);
-        Path filePath = Paths.get(fileObj.getAbsolutePath());
+        byte[] fileData = Base64.getDecoder().decode(base64Data);
 
         PutObjectRequest putObjectRequest = PutObjectRequest.builder()
                 .bucket(bucketName)
                 .key(s3Path)
                 .build();
 
-        s3Client.putObject(putObjectRequest, filePath);
+        s3Client.putObject(putObjectRequest, RequestBody.fromBytes(fileData));
 
-        fileObj.delete();
         return s3Path;  // 返回完整的S3路徑
     } catch (Exception e) {
         e.printStackTrace();
@@ -116,15 +112,9 @@ private String uploadSingleFileToS3(MultipartFile file, String bucketName, Strin
     }
 }
 
-private File convertMultiPartFileToFile(MultipartFile file) {
-    File fileObj = new File(file.getOriginalFilename());
-    try (FileOutputStream outputStream = new FileOutputStream(fileObj)) {
-        outputStream.write(file.getBytes());
-    } catch (IOException e) {
-        e.printStackTrace();
-    }
-    return fileObj;
-}
+    
+    
+
 
         // 獲得音樂長度
     private int getMusicDuration(String videoPath) {

@@ -15,20 +15,21 @@ class LambdaHandlers {
 
     public static class UploadSongLambdaHandler implements RequestHandler<Map<String, Object>, String> {
 
-        @Override
-        public String handleRequest(Map<String, Object> input, Context context) {
-            // 從input中提取所需的參數，然後調用handleUploadSong方法
-            MultipartFile audioFile = (MultipartFile) input.get("audioFile");
-            MultipartFile coverFile = (MultipartFile) input.get("coverFile");
-            String albumTitle = (String) input.get("albumTitle");
-            String songTitle = (String) input.get("songTitle");
-            return handleUploadSong(audioFile, coverFile, albumTitle, songTitle);
-        }
-
-        public String handleUploadSong(MultipartFile audioFile, MultipartFile coverFile, String albumTitle, String songTitle) {
-            return musicService.uploadFileToS3(audioFile, coverFile, albumTitle, songTitle);
-        }
+    @Override
+    public String handleRequest(Map<String, Object> input, Context context) {
+        // 從input中提取所需的參數，然後調用handleUploadSong方法
+        String base64Audio = (String) input.get("audioFile");
+        String base64Cover = (String) input.get("coverFile");
+        String albumTitle = (String) input.get("albumTitle");
+        String songTitle = (String) input.get("songTitle");
+        
+        return handleUploadSong(base64Audio, base64Cover, albumTitle, songTitle);
     }
+
+    public String handleUploadSong(String base64Audio, String base64Cover, String albumTitle, String songTitle) {
+        return musicService.uploadFileToS3(base64Audio, base64Cover, albumTitle, songTitle);
+    }
+}
 
     public static class GetAllAlbumsLambdaHandler implements RequestHandler<Map<String, Object>, String> {
 
