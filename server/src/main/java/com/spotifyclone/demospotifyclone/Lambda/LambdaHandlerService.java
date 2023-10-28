@@ -12,16 +12,26 @@ import java.util.Map;
     private static final MusicService musicService = new MusicService();
 
     // Lambda Handler 用於獲取預先簽名的URL
-    public static class GetPresignedUrlLambdaHandler implements RequestHandler<Map<String, Object>, String> {
-        
-        @Override
-        public String handleRequest(Map<String, Object> input, Context context) {
-            String albumTitle = (String) input.get("albumTitle");
-            String songTitle = (String) input.get("songTitle");
-            
-            return musicService.getPresignedUrlForUpload(albumTitle, songTitle);
-        }
+    public static class GetPresignedUrlsLambdaHandler implements RequestHandler<Map<String, Object>, Map<String, String>> {
+    
+    @Override
+    public Map<String, String> handleRequest(Map<String, Object> input, Context context) {
+        String albumTitle = (String) input.get("albumTitle");
+        String songTitle = (String) input.get("title");
+
+        // 獲取歌曲的預先簽名URL
+        String songPresignedUrl = musicService.getPresignedUrlForSongUpload(albumTitle, songTitle);
+        // 獲取封面的預先簽名URL
+        String coverPresignedUrl = musicService.getPresignedUrlForCoverUpload(albumTitle);
+
+        Map<String, String> presignedUrls = new HashMap<>();
+        presignedUrls.put("songPresignedUrl", songPresignedUrl);
+        presignedUrls.put("coverPresignedUrl", coverPresignedUrl);
+
+        return presignedUrls;
     }
+}
+
 
     // Lambda Handler 用於將歌曲信息上傳到數據庫
     public static class SaveSongToDbLambdaHandler implements RequestHandler<Map<String, Object>, String> {
