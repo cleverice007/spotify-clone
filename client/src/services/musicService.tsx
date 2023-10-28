@@ -26,6 +26,20 @@ export const getAllAlbums = async (): Promise<Album[]> => {
     return [];
   }
 };
+export const convertFileToBase64 = (file: File): Promise<string> => {
+  return new Promise((resolve, reject) => {
+    const reader = new FileReader();
+    reader.onload = () => {
+      if (reader.result && typeof reader.result === 'string') {
+        resolve(reader.result);
+      } else {
+        reject('Failed to read file as base64 string');
+      }
+    };
+    reader.onerror = reject;
+    reader.readAsDataURL(file);
+  });
+};
 
 export const uploadSong = async (songData: {
   title: string,
@@ -34,10 +48,13 @@ export const uploadSong = async (songData: {
   albumTitle: string,
   albumCoverUrl: File
 }) => {
+  const base64Audio = await convertFileToBase64(songData.filePath);
+  const base64Cover = await convertFileToBase64(songData.albumCoverUrl);
+
   const formData = new FormData();
 
-  formData.append("audioFile", songData.filePath);
-  formData.append("coverFile", songData.albumCoverUrl);
+  formData.append("audioFile", base64Audio);
+  formData.append("coverFile", base64Cover);
   formData.append("albumTitle", songData.albumTitle);
   formData.append("songTitle", songData.title);
   formData.append("artist", songData.artist);
