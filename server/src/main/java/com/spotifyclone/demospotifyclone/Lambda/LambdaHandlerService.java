@@ -1,9 +1,10 @@
-package com.spotifyclone.demospotifyclone.service;
+package com.spotifyclone.demospotifyclone.Lambda;
 
 import com.amazonaws.services.lambda.runtime.Context;
 import com.amazonaws.services.lambda.runtime.RequestHandler;
 import org.springframework.web.multipart.MultipartFile;
 import com.spotifyclone.demospotifyclone.model.Album;
+import com.spotifyclone.demospotifyclone.service.MusicService;
 
 import java.util.Map;
 import java.util.List;
@@ -43,3 +44,48 @@ public class LambdaHandlerService implements RequestHandler<Map<String, Object>,
         return musicService.getAllAlbums();
     }
 }
+
+
+
+/*
+ * package com.spotifyclone.demospotifyclone;
+
+import org.springframework.boot.SpringApplication;
+import org.springframework.boot.autoconfigure.SpringBootApplication;
+import org.springframework.context.ApplicationListener;
+import org.springframework.context.event.ContextRefreshedEvent;
+import org.springframework.stereotype.Component;
+
+import javax.sql.DataSource;
+import java.sql.Connection;
+import java.sql.SQLException;
+
+@SpringBootApplication
+public class DemospotifyCloneApplication {
+
+    public static void main(String[] args) {
+        SpringApplication.run(DemospotifyCloneApplication.class, args);
+    }
+
+    @Component
+    public class DatabaseConnectionChecker implements ApplicationListener<ContextRefreshedEvent> {
+
+        private final DataSource dataSource;
+
+        public DatabaseConnectionChecker(DataSource dataSource) {
+            this.dataSource = dataSource;
+        }
+
+        @Override
+        public void onApplicationEvent(ContextRefreshedEvent event) {
+            try (Connection connection = dataSource.getConnection()) {
+                System.out.println("Successfully connected to PostgreSQL database!");
+            } catch (SQLException e) {
+                System.out.println("Failed to connect to PostgreSQL database.");
+                e.printStackTrace();
+            }
+        }
+    }
+}
+
+ */
