@@ -26,20 +26,6 @@ export const getAllAlbums = async (): Promise<Album[]> => {
     return [];
   }
 };
-export const convertFileToBase64 = (file: File): Promise<string> => {
-  return new Promise((resolve, reject) => {
-    const reader = new FileReader();
-    reader.onload = () => {
-      if (reader.result && typeof reader.result === 'string') {
-        resolve(reader.result);
-      } else {
-        reject('Failed to read file as base64 string');
-      }
-    };
-    reader.onerror = reject;
-    reader.readAsDataURL(file);
-  });
-};
 
 export const uploadSong = async (songData: {
   title: string,
@@ -48,32 +34,46 @@ export const uploadSong = async (songData: {
   albumTitle: string,
   albumCoverUrl: File
 }) => {
-  const base64Audio = await convertFileToBase64(songData.filePath);
-  const base64Cover = await convertFileToBase64(songData.albumCoverUrl);
 
-  const formData = new FormData();
-
-  formData.append("audioFile", base64Audio);
-  formData.append("coverFile", base64Cover);
-  formData.append("albumTitle", songData.albumTitle);
-  formData.append("songTitle", songData.title);
-  formData.append("artist", songData.artist);
-
+  // 1. 獲取S3的預簽名URL
+  let presignedUrls;
   try {
-    const response = await axios.post(`${API_URL}/upload`, formData);
+    presignedUrls = await getPresignedUrl(songData.albumTitle, songData.title);
+  } catch (error) {
+    console.error("Error getting presigned URLs:", error);
+    throw error;
+  }
+
+  // 2. 上傳到S3
+  await axios.put(presignedUrls.songPresignedUrl, songData.filePath);
+  await axios.put(presignedUrls.coverPresignedUrl, songData.albumCoverUrl);
+
+  // 3. 獲得S3的URL或路徑 
+  const songS3Path = `https://spotify-clone-mason.s3.amazonaws.com/${songData.albumTitle}/songs/${songData.title}.mp3`;
+  const coverS3Path = `https://spotify-clone-mason.s3.amazonaws.com/${songData.albumTitle}/cover.jpg`;
+
+  // 4. 發送到後端
+  try {
+    const response = await axios.post(`${API_URL}/upload`, {
+      albumTitle: songData.albumTitle,
+      songTitle: songData.title,
+      artist: songData.artist,
+      filePath: songS3Path,
+      albumCoverUrl: coverS3Path
+    });
     return response.data;
   } catch (error) {
-    console.error("Error uploading song:", error);
+    console.error("Error uploading song details to backend:", error);
     throw error;
   }
 };
 
 
-export const getPresignedUrl = async (albumTitle: string, songTitle: string) => {
+export const getPresignedUrl = async (albumTitle: string, title: string) => {
   const endpoint = '<YOUR_LAMBDA_ENDPOINT>'; // 替換成您的Lambda endpoint
   const data = {
       albumTitle: albumTitle,
-      songTitle: songTitle,
+      title: title,
   };
 
   try {

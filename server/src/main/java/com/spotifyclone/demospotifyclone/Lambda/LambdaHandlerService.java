@@ -6,6 +6,8 @@ import com.spotifyclone.demospotifyclone.model.Album;
 import com.spotifyclone.demospotifyclone.service.MusicService;
 import java.util.List;
 import java.util.Map;
+import java.util.HashMap;
+
 
  class LambdaHandlers {
 
