@@ -10,32 +10,38 @@ function UploadForm() {
     const coverRef = useRef<HTMLInputElement | null>(null);
     
     const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
-        e.preventDefault();
-      
-        // 檢查所有的 ref.current 是否存在
-        if (
-          !titleRef.current ||
-          !artistRef.current ||
-          !fileRef.current ||
-          !fileRef.current.files ||
-          !albumTitleRef.current ||
-          !coverRef.current ||
-          !coverRef.current.files
-        ) {
-          // 如果任何一個 ref 是 null，則直接返回，不繼續執行
-          return;
-        }
-              
-        const songData = {
-          title: titleRef.current.value,
-          artist: artistRef.current.value,
-          filePath: fileRef.current.files[0], 
-          albumTitle: albumTitleRef.current.value,
-          albumCoverUrl: coverRef.current.files[0]
-        };
-      
-        uploadSong(songData);
+      e.preventDefault();
+    
+      // 檢查所有的 ref.current 是否存在
+      if (
+        !titleRef.current ||
+        !artistRef.current ||
+        !fileRef.current ||
+        !fileRef.current.files ||
+        !albumTitleRef.current ||
+        !coverRef.current ||
+        !coverRef.current.files
+      ) {
+        alert("請確保所有字段都已填寫並選擇了文件。");
+        return;
+      }
+            
+      const songData = {
+        title: titleRef.current.value,
+        artist: artistRef.current.value,
+        filePath: fileRef.current.files[0], 
+        albumTitle: albumTitleRef.current.value,
+        albumCoverUrl: coverRef.current.files[0]
       };
+  
+      try {
+        await uploadSong(songData);
+        alert("歌曲上傳成功！");
+      } catch (error) {
+        alert("上傳歌曲時出現錯誤。請稍後再試。");
+      }
+    };
+  
       
 
   return (
