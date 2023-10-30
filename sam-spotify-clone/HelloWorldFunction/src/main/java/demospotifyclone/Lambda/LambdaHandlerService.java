@@ -17,22 +17,24 @@ class LambdaHandlers {
 
     public static class GetPresignedUrlsLambdaHandler implements RequestHandler<APIGatewayProxyRequestEvent, APIGatewayProxyResponseEvent> {
 
-        @Override
-        public APIGatewayProxyResponseEvent handleRequest(APIGatewayProxyRequestEvent input, Context context) {
-            String albumTitle = input.getQueryStringParameters().get("albumTitle");
-            String songTitle = input.getQueryStringParameters().get("title");
+ @Override
+    public APIGatewayProxyResponseEvent handleRequest(APIGatewayProxyRequestEvent input, Context context) {
+        Map<String, String> formData = new Gson().fromJson(input.getBody(), Map.class);
+        
+        String albumTitle = formData.get("albumTitle");
+        String songTitle = formData.get("title");
 
-            String songPresignedUrl = musicService.getPresignedUrlForSongUpload(albumTitle, songTitle);
-            String coverPresignedUrl = musicService.getPresignedUrlForCoverUpload(albumTitle);
+        String songPresignedUrl = musicService.getPresignedUrlForSongUpload(albumTitle, songTitle);
+        String coverPresignedUrl = musicService.getPresignedUrlForCoverUpload(albumTitle);
 
-            Map<String, String> presignedUrls = new HashMap<>();
-            presignedUrls.put("songPresignedUrl", songPresignedUrl);
-            presignedUrls.put("coverPresignedUrl", coverPresignedUrl);
+        Map<String, String> presignedUrls = new HashMap<>();
+        presignedUrls.put("songPresignedUrl", songPresignedUrl);
+        presignedUrls.put("coverPresignedUrl", coverPresignedUrl);
 
-            APIGatewayProxyResponseEvent response = new APIGatewayProxyResponseEvent();
-            response.setStatusCode(200);
-            response.setBody(new Gson().toJson(presignedUrls));
-            return response;
+        APIGatewayProxyResponseEvent response = new APIGatewayProxyResponseEvent();
+        response.setStatusCode(200);
+        response.setBody(new Gson().toJson(presignedUrls));
+        return response;
         }
     }
 
