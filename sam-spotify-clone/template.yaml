@@ -51,6 +51,53 @@ Resources:
             Path: /albums
             Method: get
 
+     MyRDSInstance:
+    Type: AWS::RDS::DBInstance
+    Properties:
+      DBName: spotify_clone_mason_3
+      AllocatedStorage: 20
+      DBInstanceClass: db.t2.micro
+      Engine: postgres
+      MasterUsername: mason
+      MasterUserPassword: cleverice007
+      MultiAZ: false
+
+  MyS3Bucket:
+    Type: AWS::S3::Bucket
+    Properties:
+      BucketName: spotify-clone-mason
+
+  # Policies to allow Lambda functions to interact with S3 and RDS
+  LambdaExecutionRole:
+    Type: AWS::IAM::Role
+    Properties:
+      AssumeRolePolicyDocument:
+        Version: '2012-10-17'
+        Statement:
+          - Effect: Allow
+            Principal:
+              Service:
+                - lambda.amazonaws.com
+            Action:
+              - sts:AssumeRole
+      Policies:
+        - PolicyName: S3AndRDSAccessPolicy
+          PolicyDocument:
+            Version: '2012-10-17'
+            Statement:
+              - Effect: Allow
+                Action:
+                  - s3:*
+                Resource:
+                  - arn:aws:s3:::spotify-clone-mason/*
+              - Effect: Allow
+                Action:
+                  - rds:*
+                Resource:
+                  - !Sub 'arn:aws:rds:${AWS::Region}:${AWS::AccountId}:db:MyRDSInstance'
+
+
+
 Outputs:
   GetPresignedUrlsApi:
     Description: API Gateway endpoint for GetPresignedUrls function
