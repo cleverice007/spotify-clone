@@ -42,12 +42,15 @@ class LambdaHandlers {
 
         @Override
         public APIGatewayProxyResponseEvent handleRequest(APIGatewayProxyRequestEvent input, Context context) {
-            String songId = input.getQueryStringParameters().get("songId");
-            String title = input.getQueryStringParameters().get("title");
-            String artist = input.getQueryStringParameters().get("artist");
-            String filePath = input.getQueryStringParameters().get("filePath");
-            String albumCoverUrl = input.getQueryStringParameters().get("albumCoverUrl");
-            String albumTitle = input.getQueryStringParameters().get("albumTitle");
+        // 將請求主體的JSON解析為Map
+        Map<String, String> formData = new Gson().fromJson(input.getBody(), Map.class);
+
+        String songId = formData.get("songId");
+        String title = formData.get("title");
+        String artist = formData.get("artist");
+        String filePath = formData.get("filePath");
+        String albumCoverUrl = formData.get("albumCoverUrl");
+        String albumTitle = formData.get("albumTitle");
 
             String result = musicService.uploadSongToDB(songId, title, artist, filePath, albumCoverUrl, albumTitle);
             APIGatewayProxyResponseEvent response = new APIGatewayProxyResponseEvent();
