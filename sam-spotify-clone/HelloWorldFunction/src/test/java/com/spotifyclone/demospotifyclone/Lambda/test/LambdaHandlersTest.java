@@ -1,4 +1,4 @@
-package com.spotifyclone.demospotifyclone.Lambda;
+package com.spotifyclone.demospotifyclone.Lambda.test;
 
 import com.amazonaws.services.lambda.runtime.Context;
 import com.amazonaws.services.lambda.runtime.events.APIGatewayProxyRequestEvent;

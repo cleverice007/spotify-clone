@@ -51,7 +51,7 @@ Resources:
             Path: /albums
             Method: get
 
-     MyRDSInstance:
+    MyRDSInstance:
     Type: AWS::RDS::DBInstance
     Properties:
       DBName: spotify_clone_mason_3
