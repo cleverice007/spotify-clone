@@ -16,7 +16,8 @@ import com.spotifyclone.demospotifyclone.model.Album;
 
 
 import static org.junit.jupiter.api.Assertions.*;
-import static org.mockito.Mockito.*;
+import org.mockito.Mock;
+import org.mockito.MockitoAnnotations;
 
 import java.util.Arrays;
 import java.util.List;
@@ -27,16 +28,16 @@ class LambdaHandlersTest {
     private final SaveSongToDbLambdaHandler saveSongHandler = new SaveSongToDbLambdaHandler();
     private final GetAllAlbumsLambdaHandler getAllAlbumsHandler = new GetAllAlbumsLambdaHandler();
 
-
     @Mock
-    private AlbumRepository albumRepository;
+    private AlbumRepository albumRepository;  // Mock AlbumRepository 接口
 
-    private final Context context = mock(Context.class);
+    @InjectMocks
+    private MusicService musicService; // 自動注入 AlbumRepository
+
 
     @BeforeEach
     void setUp() {
         MockitoAnnotations.openMocks(this);
-        getAllAlbumsHandler.setAlbumRepository(albumRepository);
     }
 
     @Test
@@ -101,16 +102,44 @@ void testGetAllAlbums() {
     
     album2.setSongs(Arrays.asList(song3, song4));
 
-    // 模擬 albumRepository 的行為
-    List<Album> mockAlbums = Arrays.asList(album1, album2);
-    when(albumRepository.findAll()).thenReturn(mockAlbums);
+     // 模擬 albumRepository 的行為
+     List<Album> mockAlbums = Arrays.asList(album1, album2);
+     when(albumRepository.findAll()).thenReturn(mockAlbums);
 
-    APIGatewayProxyRequestEvent requestEvent = new APIGatewayProxyRequestEvent();
-    APIGatewayProxyResponseEvent responseEvent = getAllAlbumsHandler.handleRequest(requestEvent, context);
+     APIGatewayProxyRequestEvent requestEvent = new APIGatewayProxyRequestEvent();
+     APIGatewayProxyResponseEvent responseEvent = getAllAlbumsHandler.handleRequest(requestEvent, context);
 
-    // 驗證狀態碼和其他預期行為
-    assertEquals(200, responseEvent.getStatusCode());
-    // 在此添加其他檢查，例如，確保返回的JSON包含正確的專輯和歌曲列表等
+     // 驗證狀態碼和其他預期行為
+     assertEquals(200, responseEvent.getStatusCode());
+
+     // 解析響應體以確認返回的數據是否正確
+     Type listType = new TypeToken<List<Album>>() {}.getType(); // 添加這個來正確地解析 JSON 到 List<Album>
+     List<Album> responseBodyAlbums = new Gson().fromJson(responseEvent.getBody(), listType);
+
+     // 驗證返回的專輯列表
+     assertEquals(mockAlbums.size(), responseBodyAlbums.size());
+     // 遍歷每個專輯並驗證歌曲數量和屬性
+for (int i = 0; i < mockAlbums.size(); i++) {
+    Album expectedAlbum = mockAlbums.get(i);
+    Album actualAlbum = responseBodyAlbums.get(i);
+    
+    // 驗證歌曲數量
+    assertEquals(expectedAlbum.getSongs().size(), actualAlbum.getSongs().size());
+    
+    // 遍歷歌曲並檢查屬性
+    for (int j = 0; j < expectedAlbum.getSongs().size(); j++) {
+        Song expectedSong = expectedAlbum.getSongs().get(j);
+        Song actualSong = actualAlbum.getSongs().get(j);
+        
+        // 驗證歌曲屬性
+        assertEquals(expectedSong.getId(), actualSong.getId());
+        assertEquals(expectedSong.getTitle(), actualSong.getTitle());
+        assertEquals(expectedSong.getArtist(), actualSong.getArtist());
+        assertEquals(expectedSong.getDuration(), actualSong.getDuration());
+        assertEquals(expectedSong.getFilePath(), actualSong.getFilePath());
+        assertEquals(expectedSong.getAlbumCoverUrl(), actualSong.getAlbumCoverUrl());
+    }
+}
 }
 
 }
