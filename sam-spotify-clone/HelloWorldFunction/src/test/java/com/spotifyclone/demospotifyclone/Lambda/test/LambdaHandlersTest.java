@@ -8,6 +8,8 @@ import com.spotifyclone.demospotifyclone.Lambda.LambdaHandlers.GetPresignedUrlsL
 import com.spotifyclone.demospotifyclone.Lambda.LambdaHandlers.SaveSongToDbLambdaHandler;
 import com.spotifyclone.demospotifyclone.model.Album;
 import com.spotifyclone.demospotifyclone.model.Song;
+import com.spotifyclone.demospotifyclone.service.MusicService;
+
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -18,9 +20,18 @@ import com.spotifyclone.demospotifyclone.model.Album;
 import static org.junit.jupiter.api.Assertions.*;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
+import org.mockito.InjectMocks;
+
 
 import java.util.Arrays;
 import java.util.List;
+import com.google.gson.reflect.TypeToken;
+import java.lang.reflect.Type;
+import java.util.Map;
+import com.google.gson.Gson;
+import static org.mockito.Mockito.*;
+import static org.mockito.ArgumentMatchers.anyString;
+
 
 class LambdaHandlersTest {
 
@@ -55,7 +66,7 @@ class LambdaHandlersTest {
         when(mockMusicService.getPresignedUrlForCoverUpload("TestAlbum")).thenReturn("coverUrl");
         
         // 創建GetUrlsHandler的實例，並傳入模擬的MusicService對象
-        GetUrlsHandler getUrlsHandler = new GetUrlsHandler(mockMusicService);
+        GetPresignedUrlsLambdaHandler getUrlsHandler = new GetUrlsHandler(mockMusicService);
     
         // 執行handleRequest方法進行測試，這應該會觸發模擬對象的相應行為
         APIGatewayProxyResponseEvent responseEvent = getUrlsHandler.handleRequest(requestEvent, context);
