@@ -40,23 +40,66 @@ class LambdaHandlersTest {
         MockitoAnnotations.openMocks(this);
     }
 
+    // 定義一個單元測試方法來測試獲取預簽名URL的功能
     @Test
     void testGetPresignedUrls() {
+        // 創建APIGateway的請求事件並設定請求正文內容，這裡是用來模擬客戶端發送的數據
         APIGatewayProxyRequestEvent requestEvent = new APIGatewayProxyRequestEvent();
         requestEvent.setBody("{ \"albumTitle\": \"TestAlbum\", \"title\": \"TestSong\" }");
-
+        
+        // 使用Mockito框架創建一個對MusicService接口的模擬對象
+        MusicService mockMusicService = mock(MusicService.class);
+        // 配置當調用模擬對象的getPresignedUrlForSongUpload方法時返回一個指定的URL
+        when(mockMusicService.getPresignedUrlForSongUpload("TestAlbum", "TestSong")).thenReturn("songUrl");
+        // 配置當調用模擬對象的getPresignedUrlForCoverUpload方法時返回另一個指定的URL
+        when(mockMusicService.getPresignedUrlForCoverUpload("TestAlbum")).thenReturn("coverUrl");
+        
+        // 創建GetUrlsHandler的實例，並傳入模擬的MusicService對象
+        GetUrlsHandler getUrlsHandler = new GetUrlsHandler(mockMusicService);
+    
+        // 執行handleRequest方法進行測試，這應該會觸發模擬對象的相應行為
         APIGatewayProxyResponseEvent responseEvent = getUrlsHandler.handleRequest(requestEvent, context);
+    
+        // 斷言來檢查HTTP響應的狀態碼是否為200
         assertEquals(200, responseEvent.getStatusCode());
+    
+        // 使用Gson將響應正文從JSON字符串解析為Map對象
+        Type responseType = new TypeToken<Map<String, String>>(){}.getType();
+        Map<String, String> presignedUrls = new Gson().fromJson(responseEvent.getBody(), responseType);
+    
+        // 斷言來驗證返回的Map對象中預簽名URL是否與期望值一致
+        assertEquals("songUrl", presignedUrls.get("songPresignedUrl"));
+        assertEquals("coverUrl", presignedUrls.get("coverPresignedUrl"));
+    
+        // 使用Mockito的verify方法來檢查模擬的MusicService是否有調用指定的方法
+        verify(mockMusicService).getPresignedUrlForSongUpload("TestAlbum", "TestSong");
+        verify(mockMusicService).getPresignedUrlForCoverUpload("TestAlbum");
     }
-
+    
     @Test
-    void testSaveSongToDb() {
+    public void testSaveSongToDb() {
+        // 创建模拟的MusicService对象
+        MusicService mockMusicService = mock(MusicService.class);
+        // 配置模拟对象返回预期结果
+        String expectedResponse = "Expected response";
+        when(mockMusicService.uploadSongToDB(anyString(), anyString(), anyString(), anyString(), anyString(), anyString())).thenReturn(expectedResponse);
+
+        // 创建请求事件
         APIGatewayProxyRequestEvent requestEvent = new APIGatewayProxyRequestEvent();
         requestEvent.setBody("{ \"songId\": \"123\", \"title\": \"TestSong\", \"artist\": \"TestArtist\", \"filePath\": \"path/to/file\", \"albumCoverUrl\": \"path/to/cover\", \"albumTitle\": \"TestAlbum\" }");
 
-        APIGatewayProxyResponseEvent responseEvent = saveSongHandler.handleRequest(requestEvent, context);
+        // 创建Lambda处理器实例，注入模拟的MusicService
+        SaveSongToDbLambdaHandler handler = new SaveSongToDbLambdaHandler(mockMusicService);
+
+        // 调用handleRequest方法
+        APIGatewayProxyResponseEvent responseEvent = handler.handleRequest(requestEvent, mock(Context.class));
+
+        // 验证状态码
         assertEquals(200, responseEvent.getStatusCode());
+        // 验证返回的正文
+        assertEquals(expectedResponse, responseEvent.getBody());
     }
+
 
 @Test
 void testGetAllAlbums() {
