@@ -23,15 +23,20 @@ import java.util.List;
 
 class LambdaHandlersTest {
 
-    private final GetPresignedUrlsLambdaHandler getUrlsHandler = new LambdaHandlers.GetPresignedUrlsLambdaHandler();
-    private final SaveSongToDbLambdaHandler saveSongHandler = new LambdaHandlers.SaveSongToDbLambdaHandler();
-    private final GetAllAlbumsLambdaHandler getAllAlbumsHandler = new LambdaHandlers.GetAllAlbumsLambdaHandler();
+    private final GetPresignedUrlsLambdaHandler getUrlsHandler = new GetPresignedUrlsLambdaHandler();
+    private final SaveSongToDbLambdaHandler saveSongHandler = new SaveSongToDbLambdaHandler();
+    private final GetAllAlbumsLambdaHandler getAllAlbumsHandler = new GetAllAlbumsLambdaHandler();
+
+
+    @Mock
+    private AlbumRepository albumRepository;
 
     private final Context context = mock(Context.class);
 
     @BeforeEach
     void setUp() {
-        // 在此初始化任何共同的模擬物件或測試前置條件
+        MockitoAnnotations.openMocks(this);
+        getAllAlbumsHandler.setAlbumRepository(albumRepository);
     }
 
     @Test

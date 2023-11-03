@@ -11,7 +11,7 @@ import java.util.Map;
 import java.util.HashMap;
 import com.google.gson.Gson;
 
-class LambdaHandlers {
+public class LambdaHandlers {
 
     private static final MusicService musicService = new MusicService();
 
