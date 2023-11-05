@@ -41,6 +41,7 @@ class LambdaHandlersTest {
 
     @Mock
     private AlbumRepository albumRepository;  // Mock AlbumRepository 接口
+    private Context context;
 
     @InjectMocks
     private MusicService musicService; // 自動注入 AlbumRepository
@@ -49,6 +50,7 @@ class LambdaHandlersTest {
     @BeforeEach
     void setUp() {
         MockitoAnnotations.openMocks(this);
+        context = mock(Context.class); // 初始化 context 變數
     }
 
     // 定義一個單元測試方法來測試獲取預簽名URL的功能
@@ -66,7 +68,7 @@ class LambdaHandlersTest {
         when(mockMusicService.getPresignedUrlForCoverUpload("TestAlbum")).thenReturn("coverUrl");
         
         // 創建GetUrlsHandler的實例，並傳入模擬的MusicService對象
-        GetPresignedUrlsLambdaHandler getUrlsHandler = new GetUrlsHandler(mockMusicService);
+        GetPresignedUrlsLambdaHandler getUrlsHandler = new GetPresignedUrlsLambdaHandler();
     
         // 執行handleRequest方法進行測試，這應該會觸發模擬對象的相應行為
         APIGatewayProxyResponseEvent responseEvent = getUrlsHandler.handleRequest(requestEvent, context);
@@ -99,8 +101,7 @@ class LambdaHandlersTest {
         APIGatewayProxyRequestEvent requestEvent = new APIGatewayProxyRequestEvent();
         requestEvent.setBody("{ \"songId\": \"123\", \"title\": \"TestSong\", \"artist\": \"TestArtist\", \"filePath\": \"path/to/file\", \"albumCoverUrl\": \"path/to/cover\", \"albumTitle\": \"TestAlbum\" }");
 
-        // 创建Lambda处理器实例，注入模拟的MusicService
-        SaveSongToDbLambdaHandler handler = new SaveSongToDbLambdaHandler(mockMusicService);
+        SaveSongToDbLambdaHandler handler = new SaveSongToDbLambdaHandler();
 
         // 调用handleRequest方法
         APIGatewayProxyResponseEvent responseEvent = handler.handleRequest(requestEvent, mock(Context.class));
