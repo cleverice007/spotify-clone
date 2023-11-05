@@ -106,7 +106,7 @@ class LambdaHandlersTest {
         APIGatewayProxyRequestEvent requestEvent = new APIGatewayProxyRequestEvent();
         requestEvent.setBody("{ \"songId\": \"123\", \"title\": \"TestSong\", \"artist\": \"TestArtist\", \"filePath\": \"path/to/file\", \"albumCoverUrl\": \"path/to/cover\", \"albumTitle\": \"TestAlbum\" }");
 
-        SaveSongToDbLambdaHandler handler = new SaveSongToDbLambdaHandler();
+        SaveSongToDbLambdaHandler handler = new SaveSongToDbLambdaHandler(mockMusicService);
 
         // 调用handleRequest方法
         APIGatewayProxyResponseEvent responseEvent = handler.handleRequest(requestEvent, mock(Context.class));

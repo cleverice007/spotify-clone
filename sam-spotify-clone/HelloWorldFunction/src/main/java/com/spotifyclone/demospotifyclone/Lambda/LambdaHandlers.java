@@ -45,8 +45,8 @@ public static class  GetPresignedUrlsLambdaHandler implements RequestHandler<API
         }
     }
 
-    public static  class SaveSongToDbLambdaHandler implements RequestHandler<APIGatewayProxyRequestEvent, APIGatewayProxyResponseEvent> {
-            public SaveSongToDbLambdaHandler(MusicService musicService) {
+public static  class SaveSongToDbLambdaHandler implements RequestHandler<APIGatewayProxyRequestEvent, APIGatewayProxyResponseEvent> {
+    public SaveSongToDbLambdaHandler(MusicService musicService) {
         LambdaHandlers.musicService = musicService; // 將 MusicService 實例注入 LambdaHandlers
     }
 
@@ -70,8 +70,8 @@ public static class  GetPresignedUrlsLambdaHandler implements RequestHandler<API
         }
     }
 
-    public static class GetAllAlbumsLambdaHandler implements RequestHandler<APIGatewayProxyRequestEvent, APIGatewayProxyResponseEvent> {
-            public SaveSongToDbLambdaHandler(MusicService musicService) {
+public static class GetAllAlbumsLambdaHandler implements RequestHandler<APIGatewayProxyRequestEvent, APIGatewayProxyResponseEvent> {
+    public  GetAllAlbumsLambdaHandler(MusicService musicService) {
         LambdaHandlers.musicService = musicService; // 將 MusicService 實例注入 LambdaHandlers
     }
 
