@@ -15,7 +15,10 @@ public class LambdaHandlers {
 
     private static final MusicService musicService = new MusicService();
 
-    public static class GetPresignedUrlsLambdaHandler implements RequestHandler<APIGatewayProxyRequestEvent, APIGatewayProxyResponseEvent> {
+public static class  GetPresignedUrlsLambdaHandler implements RequestHandler<APIGatewayProxyRequestEvent, APIGatewayProxyResponseEvent> {
+    public GetPresignedUrlsLambdaHandler(MusicService musicService) {
+        this.musicService = musicService;
+    }
 
  @Override
     public APIGatewayProxyResponseEvent handleRequest(APIGatewayProxyRequestEvent input, Context context) {
@@ -38,7 +41,7 @@ public class LambdaHandlers {
         }
     }
 
-    public static class SaveSongToDbLambdaHandler implements RequestHandler<APIGatewayProxyRequestEvent, APIGatewayProxyResponseEvent> {
+    public static  class SaveSongToDbLambdaHandler implements RequestHandler<APIGatewayProxyRequestEvent, APIGatewayProxyResponseEvent> {
 
         @Override
         public APIGatewayProxyResponseEvent handleRequest(APIGatewayProxyRequestEvent input, Context context) {

@@ -51,11 +51,13 @@ class LambdaHandlersTest {
     void setUp() {
         MockitoAnnotations.openMocks(this);
         context = mock(Context.class); // 初始化 context 變數
+        MusicService mockMusicService = mock(MusicService.class);
     }
 
     // 定義一個單元測試方法來測試獲取預簽名URL的功能
     @Test
     void testGetPresignedUrls() {
+        
         // 創建APIGateway的請求事件並設定請求正文內容，這裡是用來模擬客戶端發送的數據
         APIGatewayProxyRequestEvent requestEvent = new APIGatewayProxyRequestEvent();
         requestEvent.setBody("{ \"albumTitle\": \"TestAlbum\", \"title\": \"TestSong\" }");
@@ -68,7 +70,7 @@ class LambdaHandlersTest {
         when(mockMusicService.getPresignedUrlForCoverUpload("TestAlbum")).thenReturn("coverUrl");
         
         // 創建GetUrlsHandler的實例，並傳入模擬的MusicService對象
-        GetPresignedUrlsLambdaHandler getUrlsHandler = new GetPresignedUrlsLambdaHandler();
+        GetPresignedUrlsLambdaHandler getUrlsHandler = new GetPresignedUrlsLambdaHandler(mockMusicService);
     
         // 執行handleRequest方法進行測試，這應該會觸發模擬對象的相應行為
         APIGatewayProxyResponseEvent responseEvent = getUrlsHandler.handleRequest(requestEvent, context);
