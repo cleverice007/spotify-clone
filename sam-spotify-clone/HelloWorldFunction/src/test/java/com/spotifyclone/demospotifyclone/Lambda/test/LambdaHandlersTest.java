@@ -35,9 +35,6 @@ import static org.mockito.ArgumentMatchers.anyString;
 
 class LambdaHandlersTest {
 
-    private final GetPresignedUrlsLambdaHandler getUrlsHandler = new GetPresignedUrlsLambdaHandler();
-    private final SaveSongToDbLambdaHandler saveSongHandler = new SaveSongToDbLambdaHandler();
-    private final GetAllAlbumsLambdaHandler getAllAlbumsHandler = new GetAllAlbumsLambdaHandler();
 
     @Mock
     private AlbumRepository albumRepository;  // Mock AlbumRepository 接口
@@ -46,13 +43,19 @@ class LambdaHandlersTest {
     @InjectMocks
     private MusicService musicService; // 自動注入 AlbumRepository
 
+    private GetPresignedUrlsLambdaHandler getUrlsHandler;
+    private SaveSongToDbLambdaHandler saveSongHandler;
+    private GetAllAlbumsLambdaHandler getAllAlbumsHandler;
+
 
     @BeforeEach
     void setUp() {
         MockitoAnnotations.openMocks(this);
         context = mock(Context.class); // 初始化 context 變數
-        MusicService mockMusicService = mock(MusicService.class);
-    }
+    // 由於 MusicService 是注入的，應該在此之前就初始化
+    getUrlsHandler = new GetPresignedUrlsLambdaHandler(musicService);
+    saveSongHandler = new SaveSongToDbLambdaHandler(musicService);
+    getAllAlbumsHandler = new GetAllAlbumsLambdaHandler(musicService);    }
 
     // 定義一個單元測試方法來測試獲取預簽名URL的功能
     @Test

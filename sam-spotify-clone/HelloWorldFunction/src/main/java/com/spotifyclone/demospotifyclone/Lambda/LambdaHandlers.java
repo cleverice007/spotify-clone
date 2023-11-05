@@ -13,11 +13,15 @@ import com.google.gson.Gson;
 
 public class LambdaHandlers {
 
-    private static final MusicService musicService = new MusicService();
+    private static MusicService musicService;
 
+    // 靜態區塊，用於初始化靜態變數
+    static {
+        musicService = new MusicService();
+    }
 public static class  GetPresignedUrlsLambdaHandler implements RequestHandler<APIGatewayProxyRequestEvent, APIGatewayProxyResponseEvent> {
     public GetPresignedUrlsLambdaHandler(MusicService musicService) {
-        this.musicService = musicService;
+        LambdaHandlers.musicService = musicService; // 將 MusicService 實例注入 LambdaHandlers
     }
 
  @Override
@@ -42,6 +46,9 @@ public static class  GetPresignedUrlsLambdaHandler implements RequestHandler<API
     }
 
     public static  class SaveSongToDbLambdaHandler implements RequestHandler<APIGatewayProxyRequestEvent, APIGatewayProxyResponseEvent> {
+            public SaveSongToDbLambdaHandler(MusicService musicService) {
+        LambdaHandlers.musicService = musicService; // 將 MusicService 實例注入 LambdaHandlers
+    }
 
         @Override
         public APIGatewayProxyResponseEvent handleRequest(APIGatewayProxyRequestEvent input, Context context) {
@@ -64,6 +71,9 @@ public static class  GetPresignedUrlsLambdaHandler implements RequestHandler<API
     }
 
     public static class GetAllAlbumsLambdaHandler implements RequestHandler<APIGatewayProxyRequestEvent, APIGatewayProxyResponseEvent> {
+            public SaveSongToDbLambdaHandler(MusicService musicService) {
+        LambdaHandlers.musicService = musicService; // 將 MusicService 實例注入 LambdaHandlers
+    }
 
         @Override
         public APIGatewayProxyResponseEvent handleRequest(APIGatewayProxyRequestEvent input, Context context) {
