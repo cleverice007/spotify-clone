@@ -30,6 +30,9 @@
             </goals>
           </execution>
         </executions>
+        <configuration>
+          <skip>true</skip>
+        </configuration>
       </plugin>
       <plugin>
         <artifactId>maven-surefire-plugin</artifactId>

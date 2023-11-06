@@ -5,6 +5,13 @@ Description: >
 
   Sample SAM Template for sam-spotify-clone
 
+Globals:
+  Function:
+    Timeout: 10
+    Runtime: java8
+    MemorySize: 512
+    CodeUri: target/HelloWorld-1.0.jar
+
 Resources:
   GetPresignedUrlsFunction:
     Type: AWS::Serverless::Function
