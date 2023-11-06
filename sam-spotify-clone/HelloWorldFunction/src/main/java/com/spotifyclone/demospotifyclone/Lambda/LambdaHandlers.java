@@ -13,15 +13,12 @@ import com.google.gson.Gson;
 
 public class LambdaHandlers {
 
-    private static MusicService musicService;
-
-    // 靜態區塊，用於初始化靜態變數
-    static {
-        musicService = new MusicService();
-    }
 public static class  GetPresignedUrlsLambdaHandler implements RequestHandler<APIGatewayProxyRequestEvent, APIGatewayProxyResponseEvent> {
+    private final MusicService musicService;
+
+    // 通過構造器注入MusicService的實例
     public GetPresignedUrlsLambdaHandler(MusicService musicService) {
-        LambdaHandlers.musicService = musicService; // 將 MusicService 實例注入 LambdaHandlers
+        this.musicService = musicService;
     }
 
  @Override
@@ -46,9 +43,13 @@ public static class  GetPresignedUrlsLambdaHandler implements RequestHandler<API
     }
 
 public static  class SaveSongToDbLambdaHandler implements RequestHandler<APIGatewayProxyRequestEvent, APIGatewayProxyResponseEvent> {
-    public SaveSongToDbLambdaHandler(MusicService musicService) {
-        LambdaHandlers.musicService = musicService; // 將 MusicService 實例注入 LambdaHandlers
+    private final MusicService musicService;
+
+    // 通過構造器注入MusicService的實例
+    public SaveSongToDbLambdaHandler (MusicService musicService) {
+        this.musicService = musicService;
     }
+
 
         @Override
         public APIGatewayProxyResponseEvent handleRequest(APIGatewayProxyRequestEvent input, Context context) {
@@ -71,9 +72,13 @@ public static  class SaveSongToDbLambdaHandler implements RequestHandler<APIGate
     }
 
 public static class GetAllAlbumsLambdaHandler implements RequestHandler<APIGatewayProxyRequestEvent, APIGatewayProxyResponseEvent> {
-    public  GetAllAlbumsLambdaHandler(MusicService musicService) {
-        LambdaHandlers.musicService = musicService; // 將 MusicService 實例注入 LambdaHandlers
+    private final MusicService musicService;
+
+    // 通過構造器注入MusicService的實例
+    public GetAllAlbumsLambdaHandler(MusicService musicService) {
+        this.musicService = musicService;
     }
+
 
         @Override
         public APIGatewayProxyResponseEvent handleRequest(APIGatewayProxyRequestEvent input, Context context) {
