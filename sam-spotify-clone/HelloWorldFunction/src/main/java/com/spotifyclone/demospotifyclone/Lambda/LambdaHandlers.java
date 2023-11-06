@@ -16,6 +16,10 @@ public class LambdaHandlers {
 public static class  GetPresignedUrlsLambdaHandler implements RequestHandler<APIGatewayProxyRequestEvent, APIGatewayProxyResponseEvent> {
     private final MusicService musicService;
 
+    public GetPresignedUrlsLambdaHandler() {
+        this.musicService = new MusicService(); 
+    }
+
     // 通過構造器注入MusicService的實例
     public GetPresignedUrlsLambdaHandler(MusicService musicService) {
         this.musicService = musicService;
@@ -45,6 +49,10 @@ public static class  GetPresignedUrlsLambdaHandler implements RequestHandler<API
 public static  class SaveSongToDbLambdaHandler implements RequestHandler<APIGatewayProxyRequestEvent, APIGatewayProxyResponseEvent> {
     private final MusicService musicService;
 
+    public SaveSongToDbLambdaHandler() {
+        this.musicService = new MusicService(); 
+    }
+
     // 通過構造器注入MusicService的實例
     public SaveSongToDbLambdaHandler (MusicService musicService) {
         this.musicService = musicService;
@@ -73,6 +81,11 @@ public static  class SaveSongToDbLambdaHandler implements RequestHandler<APIGate
 
 public static class GetAllAlbumsLambdaHandler implements RequestHandler<APIGatewayProxyRequestEvent, APIGatewayProxyResponseEvent> {
     private final MusicService musicService;
+
+      public GetAllAlbumsLambdaHandler() {
+        this.musicService = new MusicService(); 
+    }
+
 
     // 通過構造器注入MusicService的實例
     public GetAllAlbumsLambdaHandler(MusicService musicService) {
