@@ -18,61 +18,28 @@ Resources:
     Properties:
       FunctionName: GetPresignedUrlsFunction
       Handler: com.spotifyclone.demospotifyclone.Lambda.LambdaHandlers$GetPresignedUrlsLambdaHandler
-      Runtime: java8  
-      MemorySize: 512
-      Timeout: 10
-      Events:
-        GetEvent:
-          Type: Api
-          Properties:
-            Path: /presigned-url
-            Method: post
+      Environment:
+        Variables:
+          BUCKET_NAME: spotify-clone-mason
 
   SaveSongToDbFunction:
     Type: AWS::Serverless::Function
     Properties:
       FunctionName: SaveSongToDbFunction
       Handler: com.spotifyclone.demospotifyclone.Lambda.LambdaHandlers$SaveSongToDbLambdaHandler
-      Runtime: java8
-      MemorySize: 512
-      Timeout: 10
-      Events:
-        PostEvent:
-          Type: Api
-          Properties:
-            Path: /save-song
-            Method: post
+      Environment:
+        Variables:
+          BUCKET_NAME: spotify-clone-mason
+          DB_INSTANCE_NAME: spotify_clone_mason_3
 
   GetAllAlbumsFunction:
     Type: AWS::Serverless::Function
     Properties:
       FunctionName: GetAllAlbumsFunction
       Handler: com.spotifyclone.demospotifyclone.Lambda.LambdaHandlers$GetAllAlbumsLambdaHandler
-      Runtime: java8
-      MemorySize: 512
-      Timeout: 10
-      Events:
-        GetEvent:
-          Type: Api
-          Properties:
-            Path: /albums
-            Method: get
-
-    MyRDSInstance:
-    Type: AWS::RDS::DBInstance
-    Properties:
-      DBName: spotify_clone_mason_3
-      AllocatedStorage: 20
-      DBInstanceClass: db.t2.micro
-      Engine: postgres
-      MasterUsername: mason
-      MasterUserPassword: cleverice007
-      MultiAZ: false
-
-  MyS3Bucket:
-    Type: AWS::S3::Bucket
-    Properties:
-      BucketName: spotify-clone-mason
+      Environment:
+        Variables:
+          DB_INSTANCE_NAME: spotify_clone_mason_3
 
   # Policies to allow Lambda functions to interact with S3 and RDS
   LambdaExecutionRole:
