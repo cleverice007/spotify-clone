@@ -13,11 +13,25 @@ Globals:
     CodeUri: target/HelloWorld-1.0.jar
 
 Resources:
+  # API Gateway 定義
+  ServerlessRestApi:
+    Type: AWS::Serverless::Api
+    Properties:
+      StageName: Prod
+
+  # Lambda 函数和 API Gateway 的連接
   GetPresignedUrlsFunction:
     Type: AWS::Serverless::Function
     Properties:
       FunctionName: GetPresignedUrlsFunction
       Handler: com.spotifyclone.demospotifyclone.Lambda.LambdaHandlers$GetPresignedUrlsLambdaHandler
+      Events:
+        PostPresignedUrlEvent:
+          Type: Api
+          Properties:
+            RestApiId: !Ref ServerlessRestApi
+            Path: /presigned-url
+            Method: post
       Environment:
         Variables:
           BUCKET_NAME: spotify-clone-mason
@@ -27,6 +41,13 @@ Resources:
     Properties:
       FunctionName: SaveSongToDbFunction
       Handler: com.spotifyclone.demospotifyclone.Lambda.LambdaHandlers$SaveSongToDbLambdaHandler
+      Events:
+        SaveSongEvent:
+          Type: Api
+          Properties:
+            RestApiId: !Ref ServerlessRestApi
+            Path: /save-song
+            Method: post
       Environment:
         Variables:
           BUCKET_NAME: spotify-clone-mason
@@ -37,11 +58,18 @@ Resources:
     Properties:
       FunctionName: GetAllAlbumsFunction
       Handler: com.spotifyclone.demospotifyclone.Lambda.LambdaHandlers$GetAllAlbumsLambdaHandler
+      Events:
+        ListAlbumsEvent: 
+          Type: Api
+          Properties:
+            RestApiId: !Ref ServerlessRestApi
+            Path: /albums
+            Method: get
       Environment:
         Variables:
           DB_INSTANCE_NAME: spotify_clone_mason_3
 
-  # Policies to allow Lambda functions to interact with S3 and RDS
+  # Lambda 函数的 IAM 角色
   LambdaExecutionRole:
     Type: AWS::IAM::Role
     Properties:
@@ -68,20 +96,18 @@ Resources:
                 Action:
                   - rds:*
                 Resource:
-                  - !Sub 'arn:aws:rds:${AWS::Region}:${AWS::AccountId}:db:MyRDSInstance'
-
-
+                  - !Sub 'arn:aws:rds:${AWS::Region}:${AWS::AccountId}:db:spotify_clone_mason_3'
 
 Outputs:
+  # 输出 API Gateway 的 URL
   GetPresignedUrlsApi:
-    Description: API Gateway endpoint for GetPresignedUrls function
+    Description: "API Gateway endpoint URL for GetPresignedUrls function"
     Value: !Sub "https://${ServerlessRestApi}.execute-api.${AWS::Region}.amazonaws.com/Prod/presigned-url/"
 
   SaveSongToDbApi:
-    Description: API Gateway endpoint for SaveSongToDb function
+    Description: "API Gateway endpoint URL for SaveSongToDb function"
     Value: !Sub "https://${ServerlessRestApi}.execute-api.${AWS::Region}.amazonaws.com/Prod/save-song/"
 
   GetAllAlbumsApi:
-    Description: API Gateway endpoint for GetAllAlbums function
+    Description: "API Gateway endpoint URL for GetAllAlbums function"
     Value: !Sub "https://${ServerlessRestApi}.execute-api.${AWS::Region}.amazonaws.com/Prod/albums/"
-
