@@ -45,13 +45,17 @@ const Home: React.FC = () => {
     setIsPlaying(true);
   };
 
+  const handleUploadClick = async () => {
+   console.log("Uploading song to album: AlbumSample, song: SongSample");
+  }
+
   const togglePlayPause = () => {
     setIsPlaying(!isPlaying);
   };
 
   return (
     <div>
-      <AlbumGallery albums={albums} onAlbumClick={handleAlbumClick} />
+      <AlbumGallery albums={albums} onAlbumClick={handleAlbumClick} onUploadClick={handleUploadClick} />
       <PlaybackBar 
         currentSong={currentSong} 
         isPlaying={isPlaying} 
