@@ -1,0 +1,44 @@
+{
+    "CallerReference": "my-distribution",
+    "Comment": "Distribution for my website",
+    "DefaultRootObject": "index.html",
+    "Origins": {
+        "Quantity": 1,
+        "Items": [
+          {
+            "Id": "myS3Origin",
+            "DomainName": "spotify-clone-frontend.s3.amazonaws.com",
+            "S3OriginConfig": {
+              "OriginAccessIdentity": ""
+            }
+          }
+        ]
+      },
+    "DefaultCacheBehavior": {
+      "TargetOriginId": "myS3Origin",
+      "ViewerProtocolPolicy": "redirect-to-https",
+      "AllowedMethods": {
+        "Quantity": 2,
+        "Items": ["HEAD", "GET"],
+        "CachedMethods": {
+          "Quantity": 2,
+          "Items": ["HEAD", "GET"]
+        }
+      },
+      "Compress": true,
+      "ForwardedValues": {
+        "QueryString": false,
+        "Cookies": {
+          "Forward": "none"
+        }
+      },
+      "MinTTL": 0,
+      "DefaultTTL": 86400,
+      "MaxTTL": 31536000
+    },
+    "ViewerCertificate": {
+      "CloudFrontDefaultCertificate": true
+    },
+    "Enabled": true
+  }
+  
