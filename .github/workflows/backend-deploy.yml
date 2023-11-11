@@ -1,0 +1,38 @@
+name: Deploy Java Lambda to AWS
+
+on:
+  push:
+    branches:
+      - main
+    paths:
+      - 'sam-spotify-clone/**'  # 只有當 sam-spotify-clone 資料夾內的文件發生變化時才執行
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v2
+
+    - name: Set up Java
+      uses: actions/setup-java@v1
+      with:
+        java-version: '8'  # 您使用的 Java 版本
+
+    - name: Install SAM CLI
+      run: |
+        wget https://github.com/aws/aws-sam-cli/releases/latest/download/aws-sam-cli-linux-x86_64.zip
+        unzip aws-sam-cli-linux-x86_64.zip -d sam-installation
+        sudo ./sam-installation/install
+        sam --version
+
+    - name: Build SAM Application
+      run: sam build --template sam-spotify-clone/template.yaml
+
+    - name: Deploy SAM Application
+      run: sam deploy --stack-name my-stack --capabilities CAPABILITY_IAM
+      env:
+        AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
+        AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+        AWS_REGION: 'ap-southeast-1'  # 您的 AWS 配置區域
