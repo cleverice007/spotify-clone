@@ -28,7 +28,7 @@ jobs:
         sam --version
 
     - name: Build SAM Application
-      run: sam build --template server/sam-spotify-clone/template.yaml
+      run: sam build --template sam-spotify-clone/template.yaml
 
     - name: Deploy SAM Application
       run: sam deploy --stack-name sam-spotify-clone --capabilities CAPABILITY_IAM
