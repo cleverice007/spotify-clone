@@ -5,15 +5,14 @@ on:
     branches:
       - main
     paths:
-      - 'sam-spotify-clone/**'  # 只有當 sam-spotify-clone 資料夾內的文件發生變化時才執行
+      - 'sam-spotify-clone/**'
 
 jobs:
   deploy:
     runs-on: ubuntu-latest
 
     steps:
-    - name: Checkout code
-      uses: actions/checkout@v2
+    - uses: actions/checkout@v2
 
     - name: Set up Java
       uses: actions/setup-java@v1
@@ -33,6 +32,6 @@ jobs:
     - name: Deploy SAM Application
       run: sam deploy --stack-name sam-spotify-clone --capabilities CAPABILITY_IAM
       env:
-        AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
-        AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+        AWS_ACCESS_KEY_ID: ${{ secrets.BACKEND_AWS_ACCESS_KEY_ID }}
+        AWS_SECRET_ACCESS_KEY: ${{ secrets.BACKEND_AWS_SECRET_ACCESS_KEY }}
         AWS_REGION: 'ap-southeast-1'

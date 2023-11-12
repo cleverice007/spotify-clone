@@ -3,48 +3,50 @@ name: Deploy React App to AWS S3 and CloudFront
 on:
   push:
     branches:
-      - main  # or your default branch
+      - main
     paths:
-      - 'client/**'  # Only run CI/CD when there are changes in the client directory
+      - 'client/**'
 
 jobs:
   build-and-deploy:
     runs-on: ubuntu-latest
 
     steps:
-    - name: Checkout Repository
-      uses: actions/checkout@v2
+    - uses: actions/checkout@v2
 
     - name: Set up Node.js
       uses: actions/setup-node@v1
       with:
-        node-version: '14'  # or the version you use
-
-    - name: Change to client directory
-      run: cd client
+        node-version: '14'
 
     - name: Install Dependencies
       run: npm install
+      working-directory: ./client
 
     - name: Build React App
       run: npm run build
+      working-directory: ./client
 
     - name: Deploy to S3
       uses: jakejarvis/s3-sync-action@v0.5.1
       with:
         args: --acl public-read --follow-symlinks --delete
       env:
-        AWS_S3_BUCKET: ${{ secrets.AWS_S3_BUCKET }}  # Your S3 Bucket name
-        AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
-        AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
-        AWS_REGION: 'ap-southeast-1'   # Your AWS Region
-        SOURCE_DIR: 'build'       # The local directory (or file) you wish to sync to S3
+        AWS_S3_BUCKET: ${{ secrets.AWS_S3_BUCKET }}
+        AWS_ACCESS_KEY_ID: ${{ secrets.CLIENT_AWS_ACCESS_KEY_ID }}
+        AWS_SECRET_ACCESS_KEY: ${{ secrets.CLIENT_AWS_SECRET_ACCESS_KEY }}
+        AWS_REGION: 'ap-southeast-1'
+        SOURCE_DIR: 'client/build'
 
     - name: Invalidate CloudFront Distribution
       uses: chetan/invalidate-cloudfront-action@v1
       env:
-        DISTRIBUTION: ${{ secrets.CLOUDFRONT_DISTRIBUTION_ID }}  # Your CloudFront Distribution ID
+        DISTRIBUTION: ${{ secrets.CLOUDFRONT_DISTRIBUTION_ID }}
         PATHS: '/*'
+        AWS_REGION: 'ap-southeast-1'
+        AWS_ACCESS_KEY_ID: ${{ secrets.CLIENT_AWS_ACCESS_KEY_ID }}
+        AWS_SECRET_ACCESS_KEY: ${{ secrets.CLIENT_AWS_SECRET_ACCESS_KEY }}
+
         AWS_REGION: 'ap-southeast-1'
         AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
         AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
