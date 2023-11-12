@@ -21,11 +21,11 @@ jobs:
 
     - name: Install Dependencies
       run: npm install
-      working-directory: ./client
+      working-directory: client
 
     - name: Build React App
       run: npm run build
-      working-directory: ./client
+      working-directory: client
 
     - name: Deploy to S3
       uses: jakejarvis/s3-sync-action@v0.5.1
