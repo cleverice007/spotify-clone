@@ -28,6 +28,10 @@ jobs:
       run: ls -la
       working-directory: client
 
+    - name: List src directory contents
+      run: ls -la src
+      working-directory: client
+
     - name: Install Dependencies
       run: npm ci
       working-directory: client
@@ -55,4 +59,3 @@ jobs:
         AWS_REGION: 'ap-southeast-1'
         AWS_ACCESS_KEY_ID: ${{ secrets.CLIENT_AWS_ACCESS_KEY_ID }}
         AWS_SECRET_ACCESS_KEY: ${{ secrets.CLIENT_AWS_SECRET_ACCESS_KEY }}
-
