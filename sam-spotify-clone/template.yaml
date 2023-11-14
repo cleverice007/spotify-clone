@@ -29,7 +29,7 @@ Resources:
         PostPresignedUrlEvent:
           Type: Api
           Properties:
-            RestApiId: !Ref ServerlessRestApi
+            RestApiId: !Ref MyServerlessApi
             Path: /presigned-url
             Method: post
       Environment:
@@ -45,7 +45,7 @@ Resources:
         SaveSongEvent:
           Type: Api
           Properties:
-            RestApiId: !Ref ServerlessRestApi
+            RestApiId: !Ref MyServerlessApi
             Path: /save-song
             Method: post
       Environment:
@@ -62,7 +62,7 @@ Resources:
         ListAlbumsEvent: 
           Type: Api
           Properties:
-            RestApiId: !Ref ServerlessRestApi
+            RestApiId: !Ref MyServerlessApi
             Path: /albums
             Method: get
       Environment:
@@ -102,12 +102,12 @@ Outputs:
   # 输出 API Gateway 的 URL
   GetPresignedUrlsApi:
     Description: "API Gateway endpoint URL for GetPresignedUrls function"
-    Value: !Sub "https://${ServerlessRestApi}.execute-api.${AWS::Region}.amazonaws.com/Prod/presigned-url/"
+    Value: !Sub "https://${MyServerlessApi}.execute-api.${AWS::Region}.amazonaws.com/Prod/presigned-url/"
 
   SaveSongToDbApi:
     Description: "API Gateway endpoint URL for SaveSongToDb function"
-    Value: !Sub "https://${ServerlessRestApi}.execute-api.${AWS::Region}.amazonaws.com/Prod/save-song/"
+    Value: !Sub "https://${MyServerlessApi}.execute-api.${AWS::Region}.amazonaws.com/Prod/save-song/"
 
   GetAllAlbumsApi:
     Description: "API Gateway endpoint URL for GetAllAlbums function"
-    Value: !Sub "https://${ServerlessRestApi}.execute-api.${AWS::Region}.amazonaws.com/Prod/albums/"
+    Value: !Sub "https://${MyServerlessApi}.execute-api.${AWS::Region}.amazonaws.com/Prod/albums/"
