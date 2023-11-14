@@ -41,8 +41,14 @@ public static class  GetPresignedUrlsLambdaHandler implements RequestHandler<API
         presignedUrls.put("coverPresignedUrl", coverPresignedUrl);
 
         APIGatewayProxyResponseEvent response = new APIGatewayProxyResponseEvent();
+        
         response.setStatusCode(200);
         response.setBody(new Gson().toJson(presignedUrls));
+         // 添加 CORS header
+         Map<String, String> headers = new HashMap<>();
+         headers.put("Access-Control-Allow-Origin", "*"); // 或者指定特定的域名
+         response.setHeaders(headers);
+ 
         return response;
         }
     }
@@ -76,6 +82,10 @@ public static  class SaveSongToDbLambdaHandler implements RequestHandler<APIGate
             APIGatewayProxyResponseEvent response = new APIGatewayProxyResponseEvent();
             response.setStatusCode(200);
             response.setBody(result);
+            // 添加 CORS header
+            Map<String, String> headers = new HashMap<>();
+            headers.put("Access-Control-Allow-Origin", "*");
+            response.setHeaders(headers);
             return response;
         }
     }
@@ -101,6 +111,10 @@ public static class GetAllAlbumsLambdaHandler implements RequestHandler<APIGatew
             APIGatewayProxyResponseEvent response = new APIGatewayProxyResponseEvent();
             response.setStatusCode(200);
             response.setBody(new Gson().toJson(albums));
+            // 添加 CORS header
+            Map<String, String> headers = new HashMap<>();
+            headers.put("Access-Control-Allow-Origin", "*"); 
+            response.setHeaders(headers);
             return response;
         }
     }
