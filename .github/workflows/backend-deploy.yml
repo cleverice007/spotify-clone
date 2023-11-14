@@ -19,13 +19,20 @@ jobs:
       with:
         java-version: '8'
 
-    - name: Install SAM CLI
+    - name: Install or Update SAM CLI
       run: |
-        wget https://github.com/aws/aws-sam-cli/releases/latest/download/aws-sam-cli-linux-x86_64.zip
-        unzip aws-sam-cli-linux-x86_64.zip -d sam-installation
-        sudo ./sam-installation/install
+        if sam --version; then
+         echo "SAM CLI is already installed, updating..."
+         wget https://github.com/aws/aws-sam-cli/releases/latest/download/aws-sam-cli-linux-x86_64.zip
+         unzip -o aws-sam-cli-linux-x86_64.zip -d sam-installation
+         sudo ./sam-installation/install --update
+        else
+         echo "Installing SAM CLI..."
+         wget https://github.com/aws/aws-sam-cli/releases/latest/download/aws-sam-cli-linux-x86_64.zip
+         unzip aws-sam-cli-linux-x86_64.zip -d sam-installation
+         sudo ./sam-installation/install
+        fi
         sam --version
-
     - name: Build SAM Application
       run: sam build --template sam-spotify-clone/template.yaml
 
