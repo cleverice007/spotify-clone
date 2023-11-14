@@ -10,7 +10,8 @@ Globals:
     Timeout: 10
     Runtime: java8
     MemorySize: 512
-    CodeUri: target/HelloWorld-1.0.jar
+    CodeUri: ./
+
 
 Resources:
   # API Gateway 定義
