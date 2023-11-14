@@ -22,19 +22,6 @@ const Home: React.FC = () => {
     fetchAlbums();
   }, []);
 
-  useEffect(() => {
-    const fetchPresignedUrl = async () => {
-        try {
-            const url = await getPresignedUrl("AlbumSample", "SongSample");
-            setPresignedUrl(url);
-        } catch (error) {
-            console.error("Error fetching presigned URL on /home: ", error);
-        }
-    };
-
-    fetchPresignedUrl();
-  }, []);
-
   const handleAlbumClick = async (albumId: string) => {
     const songs = await getSongsInAlbum(albumId);
     if (songs.length > 0) { 

@@ -70,7 +70,7 @@ export const uploadSong = async (songData: {
 
 
 export const getPresignedUrl = async (albumTitle: string, title: string) => {
-  const endpoint = '<YOUR_LAMBDA_ENDPOINT>'; // 替換成您的Lambda endpoint
+  const endpoint = 'https://z28myk32oc.execute-api.ap-southeast-1.amazonaws.com/Prod/presigned-url';
   const data = {
       albumTitle: albumTitle,
       title: title,
