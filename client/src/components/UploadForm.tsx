@@ -1,9 +1,13 @@
 import { useRef } from "react";
 import { uploadSong } from "../services/musicService"; 
+interface UploadFormProps {
+  isModal?: boolean;
+  onClose?: () => void;
+}
 
 
-function UploadForm() {
-    const titleRef = useRef<HTMLInputElement | null>(null);
+function UploadForm({ isModal = false, onClose }: UploadFormProps) {
+  const titleRef = useRef<HTMLInputElement | null>(null);
     const artistRef = useRef<HTMLInputElement | null>(null);
     const fileRef = useRef<HTMLInputElement | null>(null);
     const albumTitleRef = useRef<HTMLInputElement | null>(null);
@@ -44,8 +48,10 @@ function UploadForm() {
   
       
 
-  return (
-    <form onSubmit={handleSubmit}>
+  // 正常渲染表單
+  const formContent = (
+    <form onSubmit={handleSubmit} className="p-4 max-w-sm mx-auto">
+      {/* 表單內容 */}
       <input ref={titleRef} placeholder="Title" required />
       <input ref={artistRef} placeholder="Artist" required />
       <input ref={fileRef} type="file" required />
@@ -53,8 +59,18 @@ function UploadForm() {
       <input ref={coverRef} type="file" required />
       <button type="submit">Upload</button>
     </form>
-);
+  );
 
+  // 如果是模態窗口，則添加額外的樣式和關閉按鈕
+  if (isModal) {
+    return (
+      <div className="modal bg-white shadow-lg rounded mx-auto my-8">
+        {formContent}
+        <button onClick={onClose}>Close</button>
+      </div>
+    );
+  }
+
+  return formContent;
 }
-
 export default UploadForm;
