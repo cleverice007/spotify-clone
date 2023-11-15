@@ -19,6 +19,11 @@ jobs:
       with:
         java-version: '8'
 
+    - name: Maven Build
+      run: mvn clean install
+      working-directory: sam-spotify-clone
+  
+
     - name: Install or Update SAM CLI
       run: |
         if sam --version; then
