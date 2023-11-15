@@ -39,11 +39,14 @@ jobs:
          sudo ./sam-installation/install
         fi
         sam --version
-    - name: Build SAM Application
-      run: sam build --template sam-spotify-clone/template.yaml
 
+    - name: Build SAM Application
+      run: sam build --template template.yaml
+      working-directory: ./sam-spotify-clone
+  
     - name: Deploy SAM Application
       run: sam deploy --stack-name sam-spotify-clone --capabilities CAPABILITY_IAM
+      working-directory: ./sam-spotify-clone
       env:
         AWS_ACCESS_KEY_ID: ${{ secrets.BACKEND_AWS_ACCESS_KEY_ID }}
         AWS_SECRET_ACCESS_KEY: ${{ secrets.BACKEND_AWS_SECRET_ACCESS_KEY }}
