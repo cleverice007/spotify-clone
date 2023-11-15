@@ -6,7 +6,8 @@ on:
       - main
     paths:
       - 'sam-spotify-clone/**'
-
+      - '.github/workflows/backend-deploy.yml'
+      - 'sam-spotify-clone/HelloWorldFunction/pom.xml'  
 jobs:
   deploy:
     runs-on: ubuntu-latest
