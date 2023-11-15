@@ -15,7 +15,7 @@ Globals:
 
 Resources:
   # API Gateway 定義
-  ServerlessRestApi:
+  MyServerlessApi:
     Type: AWS::Serverless::Api
     Properties:
       StageName: Prod
