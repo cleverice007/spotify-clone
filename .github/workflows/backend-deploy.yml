@@ -22,7 +22,7 @@ jobs:
 
     - name: Maven Build
       run: mvn clean install
-      working-directory: sam-spotify-clone
+      working-directory: sam-spotify-clone/HelloWorldFunction
   
 
     - name: Install or Update SAM CLI
