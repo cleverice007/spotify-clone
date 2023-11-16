@@ -45,7 +45,13 @@ jobs:
       working-directory: ./sam-spotify-clone
   
     - name: Deploy SAM Application
-      run: sam deploy --stack-name sam-spotify-clone --capabilities CAPABILITY_IAM
+      run: |
+        sam deploy --template-file template.yaml \
+                   --stack-name sam-spotify-clone \
+                   --capabilities CAPABILITY_IAM \
+                   --no-confirm-changeset \
+                   --no-fail-on-empty-changeset \
+                   --region ap-southeast-1
       working-directory: ./sam-spotify-clone
       env:
         AWS_ACCESS_KEY_ID: ${{ secrets.BACKEND_AWS_ACCESS_KEY_ID }}
