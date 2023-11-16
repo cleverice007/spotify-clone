@@ -50,7 +50,7 @@ class LambdaHandlersTest {
 
     @BeforeEach
     void setUp() {
-        MockitoAnnotations.openMocks(this);
+        MockitoAnnotations.initMocks(this);
         context = mock(Context.class); // 初始化 context 變數
     // 由於 MusicService 是注入的，應該在此之前就初始化
     getUrlsHandler = new GetPresignedUrlsLambdaHandler(musicService);
