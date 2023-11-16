@@ -10,7 +10,7 @@ Globals:
     Timeout: 10
     Runtime: java8
     MemorySize: 512
-    CodeUri: ./
+    CodeUri: sam-spotify-clone/
 
 
 Resources:
