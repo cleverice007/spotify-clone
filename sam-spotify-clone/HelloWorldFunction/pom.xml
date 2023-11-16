@@ -29,13 +29,13 @@
         <dependency>
             <groupId>org.springframework.boot</groupId>
             <artifactId>spring-boot-starter-security</artifactId>
-            <version>3.1.5</version>
+            <version>2.5.12</version>
         </dependency>
         <!--... All your other dependencies ... -->
         <dependency>
             <groupId>org.springframework.security</groupId>
             <artifactId>spring-security-test</artifactId>
-            <version>6.1.5</version>
+            <version>5.5.6</version>
             <scope>test</scope>
         </dependency>
         <dependency>
@@ -55,7 +55,7 @@
         <dependency>
             <groupId>org.springframework.boot</groupId>
             <artifactId>spring-boot-starter-data-jpa</artifactId>
-            <version>3.1.5</version>
+            <version>2.5.12</version>
         </dependency>
 
         <!-- JPA API 依赖 -->
@@ -113,7 +113,7 @@
             <plugin>
                 <groupId>org.springframework.boot</groupId>
                 <artifactId>spring-boot-maven-plugin</artifactId>
-                <version>2.7.17</version>
+                <version>2.5.12</version>
                 <configuration>
                     <skip>true</skip>
                 </configuration>
