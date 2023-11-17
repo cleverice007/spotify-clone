@@ -16,9 +16,14 @@ Globals:
 Resources:
   # API Gateway 定義
   MyServerlessApi:
-    Type: AWS::Serverless::Api
-    Properties:
-      StageName: Prod
+  Type: AWS::Serverless::Api
+  Properties:
+    StageName: Prod
+    Cors: 
+      AllowMethods: "'POST,GET,OPTIONS'"
+      AllowHeaders: "'Content-Type,X-Amz-Date,Authorization,X-Api-Key,X-Amz-Security-Token'"
+      AllowOrigin: "'*'"
+
 
   # Lambda 函数和 API Gateway 的連接
   GetPresignedUrlsFunction:
