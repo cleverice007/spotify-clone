@@ -1,8 +1,6 @@
 AWSTemplateFormatVersion: '2010-09-09'
 Transform: AWS::Serverless-2016-10-31
 Description: >
-  sam-spotify-clone
-
   Sample SAM Template for sam-spotify-clone
 
 Globals:
@@ -12,20 +10,16 @@ Globals:
     MemorySize: 512
     CodeUri: HelloWorldFunction/
 
-
 Resources:
-  # API Gateway 定義
   MyServerlessApi:
-  Type: AWS::Serverless::Api
-  Properties:
-    StageName: Prod
-    Cors: 
-      AllowMethods: "'POST,GET,OPTIONS'"
-      AllowHeaders: "'Content-Type,X-Amz-Date,Authorization,X-Api-Key,X-Amz-Security-Token'"
-      AllowOrigin: "'*'"
+    Type: AWS::Serverless::Api
+    Properties:
+      StageName: Prod
+      Cors:
+        AllowMethods: "'POST,GET,OPTIONS'"
+        AllowHeaders: "'Content-Type,X-Amz-Date,Authorization,X-Api-Key,X-Amz-Security-Token'"
+        AllowOrigin: "'*'"
 
-
-  # Lambda 函数和 API Gateway 的連接
   GetPresignedUrlsFunction:
     Type: AWS::Serverless::Function
     Properties:
@@ -65,7 +59,7 @@ Resources:
       FunctionName: GetAllAlbumsFunction
       Handler: com.spotifyclone.demospotifyclone.Lambda.LambdaHandlers$GetAllAlbumsLambdaHandler
       Events:
-        ListAlbumsEvent: 
+        ListAlbumsEvent:
           Type: Api
           Properties:
             RestApiId: !Ref MyServerlessApi
@@ -75,7 +69,6 @@ Resources:
         Variables:
           DB_INSTANCE_NAME: spotify_clone_mason_3
 
-  # Lambda 函数的 IAM 角色
   LambdaExecutionRole:
     Type: AWS::IAM::Role
     Properties:
@@ -84,36 +77,30 @@ Resources:
         Statement:
           - Effect: Allow
             Principal:
-              Service:
-                - lambda.amazonaws.com
-            Action:
-              - sts:AssumeRole
+              Service: lambda.amazonaws.com
+            Action: sts:AssumeRole
       Policies:
         - PolicyName: S3AndRDSAccessPolicy
           PolicyDocument:
             Version: '2012-10-17'
             Statement:
               - Effect: Allow
-                Action:
-                  - s3:*
-                Resource:
-                  - arn:aws:s3:::spotify-clone-mason/*
+                Action: s3:*
+                Resource: arn:aws:s3:::spotify-clone-mason/*
               - Effect: Allow
-                Action:
-                  - rds:*
-                Resource:
-                  - !Sub 'arn:aws:rds:${AWS::Region}:${AWS::AccountId}:db:spotify_clone_mason_3'
+                Action: rds:*
+                Resource: !Sub 'arn:aws:rds:${AWS::Region}:${AWS::AccountId}:db:spotify_clone_mason_3'
 
 Outputs:
-  # 输出 API Gateway 的 URL
   GetPresignedUrlsApi:
     Description: "API Gateway endpoint URL for GetPresignedUrls function"
     Value: !Sub "https://${MyServerlessApi}.execute-api.${AWS::Region}.amazonaws.com/Prod/presigned-url/"
-
+  
   SaveSongToDbApi:
     Description: "API Gateway endpoint URL for SaveSongToDb function"
     Value: !Sub "https://${MyServerlessApi}.execute-api.${AWS::Region}.amazonaws.com/Prod/save-song/"
-
+  
   GetAllAlbumsApi:
     Description: "API Gateway endpoint URL for GetAllAlbums function"
     Value: !Sub "https://${MyServerlessApi}.execute-api.${AWS::Region}.amazonaws.com/Prod/albums/"
+
