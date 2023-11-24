@@ -13,6 +13,8 @@ import com.spotifyclone.demospotifyclone.service.MusicService;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import software.amazon.awssdk.services.s3.S3Client;
+import com.spotifyclone.demospotifyclone.dao.AlbumDao;
 import com.spotifyclone.demospotifyclone.dao.AlbumDaoImpl;
 import com.spotifyclone.demospotifyclone.model.Album;
 
