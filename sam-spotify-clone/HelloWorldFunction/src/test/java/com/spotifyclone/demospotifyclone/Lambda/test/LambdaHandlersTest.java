@@ -35,29 +35,42 @@ import static org.mockito.ArgumentMatchers.anyString;
 
 class LambdaHandlersTest {
 
+    @Mock
+    private S3Client mockS3Client;
 
     @Mock
-    private AlbumDaoImpl albumDao;
-    private Context context;
+    private AlbumDao mockAlbumDao;
+
+    @Mock
+    private MusicService mockMusicService;
 
     @InjectMocks
-    private MusicService musicService; // 自动注入 MusicService
-
     private GetPresignedUrlsLambdaHandler getUrlsHandler;
+
+    @InjectMocks
     private SaveSongToDbLambdaHandler saveSongHandler;
+
+    @InjectMocks
     private GetAllAlbumsLambdaHandler getAllAlbumsHandler;
 
+    private Context context;
 
     @BeforeEach
     void setUp() {
-        albumDao = new AlbumDaoImpl(); // 初始化 AlbumDaoImpl
         MockitoAnnotations.initMocks(this);
-        context = mock(Context.class); // 初始化 context 變數
-    // 由於 MusicService 是注入的，應該在此之前就初始化
-    getUrlsHandler = new GetPresignedUrlsLambdaHandler(musicService);
-    saveSongHandler = new SaveSongToDbLambdaHandler(musicService);
-    getAllAlbumsHandler = new GetAllAlbumsLambdaHandler(musicService);    }
+        context = mock(Context.class);
 
+        // 使用 mock MusicService 的行為
+        when(mockMusicService.getPresignedUrlForSongUpload(anyString(), anyString())).thenReturn("mockUrl");
+        when(mockMusicService.getPresignedUrlForCoverUpload(anyString())).thenReturn("mockCoverUrl");
+        when(mockMusicService.uploadSongToDB(anyString(), anyString(), anyString(), anyString(), anyString(), anyString())).thenReturn("mockResponse");
+        when(mockMusicService.getAllAlbums()).thenReturn(Arrays.asList(new Album())); // 根据需要调整
+
+        // 初始化 lambda handler
+        getUrlsHandler = new GetPresignedUrlsLambdaHandler(mockMusicService);
+        saveSongHandler = new SaveSongToDbLambdaHandler(mockMusicService);
+        getAllAlbumsHandler = new GetAllAlbumsLambdaHandler(mockMusicService);
+    }
     // 定義一個單元測試方法來測試獲取預簽名URL的功能
     @Test
     void testGetPresignedUrls() {
