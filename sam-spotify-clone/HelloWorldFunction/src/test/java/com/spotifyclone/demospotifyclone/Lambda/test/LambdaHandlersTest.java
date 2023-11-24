@@ -13,7 +13,7 @@ import com.spotifyclone.demospotifyclone.service.MusicService;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import com.spotifyclone.demospotifyclone.repo.AlbumRepository;
+import com.spotifyclone.demospotifyclone.dao.AlbumDaoImpl;
 import com.spotifyclone.demospotifyclone.model.Album;
 
 
@@ -37,11 +37,11 @@ class LambdaHandlersTest {
 
 
     @Mock
-    private AlbumRepository albumRepository;  // Mock AlbumRepository 接口
+    private AlbumDaoImpl albumDao;
     private Context context;
 
     @InjectMocks
-    private MusicService musicService; // 自動注入 AlbumRepository
+    private MusicService musicService; // 自动注入 MusicService
 
     private GetPresignedUrlsLambdaHandler getUrlsHandler;
     private SaveSongToDbLambdaHandler saveSongHandler;
@@ -50,6 +50,7 @@ class LambdaHandlersTest {
 
     @BeforeEach
     void setUp() {
+        albumDao = new AlbumDaoImpl(); // 初始化 AlbumDaoImpl
         MockitoAnnotations.initMocks(this);
         context = mock(Context.class); // 初始化 context 變數
     // 由於 MusicService 是注入的，應該在此之前就初始化
@@ -162,9 +163,9 @@ void testGetAllAlbums() {
     
     album2.setSongs(Arrays.asList(song3, song4));
 
-     // 模擬 albumRepository 的行為
+     // 模擬 albumDao 的行為
      List<Album> mockAlbums = Arrays.asList(album1, album2);
-     when(albumRepository.findAll()).thenReturn(mockAlbums);
+     when(albumDao.findAll()).thenReturn(mockAlbums);
 
      APIGatewayProxyRequestEvent requestEvent = new APIGatewayProxyRequestEvent();
      APIGatewayProxyResponseEvent responseEvent = getAllAlbumsHandler.handleRequest(requestEvent, context);
