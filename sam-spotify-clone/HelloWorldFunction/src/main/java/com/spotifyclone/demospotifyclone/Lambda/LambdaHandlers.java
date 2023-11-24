@@ -10,7 +10,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.HashMap;
 import com.google.gson.Gson;
-//測試是否會在github actions 自動部署
 
 public class LambdaHandlers {
 
