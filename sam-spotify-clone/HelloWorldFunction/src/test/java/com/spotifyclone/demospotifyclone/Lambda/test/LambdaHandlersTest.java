@@ -66,7 +66,7 @@ class LambdaHandlersTest {
         when(mockMusicService.getPresignedUrlForSongUpload(anyString(), anyString())).thenReturn("mockUrl");
         when(mockMusicService.getPresignedUrlForCoverUpload(anyString())).thenReturn("mockCoverUrl");
         when(mockMusicService.uploadSongToDB(anyString(), anyString(), anyString(), anyString(), anyString(), anyString())).thenReturn("mockResponse");
-        when(mockMusicService.getAllAlbums()).thenReturn(Arrays.asList(new Album())); // 根据需要调整
+        when(mockAlbumDao.findAll()).thenReturn(Arrays.asList(new Album()));
 
         // 初始化 lambda handler
         getUrlsHandler = new GetPresignedUrlsLambdaHandler(mockMusicService);
@@ -180,7 +180,6 @@ void testGetAllAlbums() {
 
      // 模擬 albumDao 的行為
      List<Album> mockAlbums = Arrays.asList(album1, album2);
-     when(albumDao.findAll()).thenReturn(mockAlbums);
 
      APIGatewayProxyRequestEvent requestEvent = new APIGatewayProxyRequestEvent();
      APIGatewayProxyResponseEvent responseEvent = getAllAlbumsHandler.handleRequest(requestEvent, context);
