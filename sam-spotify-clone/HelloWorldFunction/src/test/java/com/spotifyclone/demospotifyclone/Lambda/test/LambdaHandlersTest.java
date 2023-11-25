@@ -43,6 +43,8 @@ class LambdaHandlersTest {
     @Mock
     private AlbumDao mockAlbumDao;
 
+    private List<Album> mockAlbums;
+
     @Mock
     private MusicService mockMusicService;
 
