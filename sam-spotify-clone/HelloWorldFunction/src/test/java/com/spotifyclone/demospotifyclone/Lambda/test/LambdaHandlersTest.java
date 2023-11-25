@@ -58,40 +58,70 @@ class LambdaHandlersTest {
     private Context context;
 
     @BeforeEach
-void setUp() {
-    MockitoAnnotations.initMocks(this);
-    context = mock(Context.class);
-
-    // 初始化模擬數據
-    Album album1 = new Album();
-    album1.setId("1");
-    album1.setTitle("Album 1");
-    album1.setCoverUrl("cover1.jpg");
-    Song song1 = new Song("1", "Song1", "Artist1", 300, "path1", "cover1");
-    Song song2 = new Song("2", "Song2", "Artist2", 320, "path2", "cover2");
-    album1.setSongs(Arrays.asList(song1, song2));
-
-    Album album2 = new Album();
-    album2.setId("2");
-    album2.setTitle("Album 2");
-    album2.setCoverUrl("cover2.jpg");
-    Song song3 = new Song("3", "Song3", "Artist3", 310, "path3", "cover3");
-    Song song4 = new Song("4", "Song4", "Artist4", 330, "path4", "cover4");
-    album2.setSongs(Arrays.asList(song3, song4));
-
-    List<Album> mockAlbums = Arrays.asList(album1, album2);
-
-    // 模擬 MusicService 和 AlbumDao 的行為
-    when(mockMusicService.getPresignedUrlForSongUpload(anyString(), anyString())).thenReturn("mockUrl");
-    when(mockMusicService.getPresignedUrlForCoverUpload(anyString())).thenReturn("mockCoverUrl");
-    when(mockMusicService.uploadSongToDB(anyString(), anyString(), anyString(), anyString(), anyString(), anyString())).thenReturn("mockResponse");
-    when(mockAlbumDao.findAll()).thenReturn(mockAlbums);
-
-    // 初始化 lambda handler
-    getUrlsHandler = new GetPresignedUrlsLambdaHandler(mockMusicService);
-    saveSongHandler = new SaveSongToDbLambdaHandler(mockMusicService);
-    getAllAlbumsHandler = new GetAllAlbumsLambdaHandler(mockMusicService);
-}
+    void setUp() {
+        MockitoAnnotations.initMocks(this);
+        context = mock(Context.class);
+    
+        // 初始化模擬數據
+        Album album1 = new Album();
+        album1.setId("1");
+        album1.setTitle("Album 1");
+        album1.setCoverUrl("cover1.jpg");
+    
+        Song song1 = new Song();
+        song1.setId("1");
+        song1.setTitle("Song1");
+        song1.setArtist("Artist1");
+        song1.setDuration(300);
+        song1.setFilePath("path1");
+        song1.setAlbumCoverUrl("cover1");
+    
+        Song song2 = new Song();
+        song2.setId("2");
+        song2.setTitle("Song2");
+        song2.setArtist("Artist2");
+        song2.setDuration(320);
+        song2.setFilePath("path2");
+        song2.setAlbumCoverUrl("cover2");
+    
+        album1.setSongs(Arrays.asList(song1, song2));
+    
+        Album album2 = new Album();
+        album2.setId("2");
+        album2.setTitle("Album 2");
+        album2.setCoverUrl("cover2.jpg");
+    
+        Song song3 = new Song();
+        song3.setId("3");
+        song3.setTitle("Song3");
+        song3.setArtist("Artist3");
+        song3.setDuration(310);
+        song3.setFilePath("path3");
+        song3.setAlbumCoverUrl("cover3");
+    
+        Song song4 = new Song();
+        song4.setId("4");
+        song4.setTitle("Song4");
+        song4.setArtist("Artist4");
+        song4.setDuration(330);
+        song4.setFilePath("path4");
+        song4.setAlbumCoverUrl("cover4");
+    
+        album2.setSongs(Arrays.asList(song3, song4));
+    
+        List<Album> mockAlbums = Arrays.asList(album1, album2);
+    
+        // 模擬 MusicService 和 AlbumDao 的行為
+        when(mockMusicService.getPresignedUrlForSongUpload(anyString(), anyString())).thenReturn("mockUrl");
+        when(mockMusicService.getPresignedUrlForCoverUpload(anyString())).thenReturn("mockCoverUrl");
+        when(mockMusicService.uploadSongToDB(anyString(), anyString(), anyString(), anyString(), anyString(), anyString())).thenReturn("mockResponse");
+        when(mockAlbumDao.findAll()).thenReturn(mockAlbums);
+    
+        // 初始化 lambda handler
+        getUrlsHandler = new GetPresignedUrlsLambdaHandler(mockMusicService);
+        saveSongHandler = new SaveSongToDbLambdaHandler(mockMusicService);
+        getAllAlbumsHandler = new GetAllAlbumsLambdaHandler(mockMusicService);
+    }
     // 定義一個單元測試方法來測試獲取預簽名URL的功能
     @Test
     void testGetPresignedUrls() {
