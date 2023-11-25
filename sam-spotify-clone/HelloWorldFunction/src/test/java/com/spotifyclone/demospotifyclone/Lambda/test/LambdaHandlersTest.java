@@ -58,21 +58,40 @@ class LambdaHandlersTest {
     private Context context;
 
     @BeforeEach
-    void setUp() {
-        MockitoAnnotations.initMocks(this);
-        context = mock(Context.class);
+void setUp() {
+    MockitoAnnotations.initMocks(this);
+    context = mock(Context.class);
 
-        // 使用 mock MusicService 的行為
-        when(mockMusicService.getPresignedUrlForSongUpload(anyString(), anyString())).thenReturn("mockUrl");
-        when(mockMusicService.getPresignedUrlForCoverUpload(anyString())).thenReturn("mockCoverUrl");
-        when(mockMusicService.uploadSongToDB(anyString(), anyString(), anyString(), anyString(), anyString(), anyString())).thenReturn("mockResponse");
-        when(mockAlbumDao.findAll()).thenReturn(Arrays.asList(new Album()));
+    // 初始化模擬數據
+    Album album1 = new Album();
+    album1.setId("1");
+    album1.setTitle("Album 1");
+    album1.setCoverUrl("cover1.jpg");
+    Song song1 = new Song("1", "Song1", "Artist1", 300, "path1", "cover1");
+    Song song2 = new Song("2", "Song2", "Artist2", 320, "path2", "cover2");
+    album1.setSongs(Arrays.asList(song1, song2));
 
-        // 初始化 lambda handler
-        getUrlsHandler = new GetPresignedUrlsLambdaHandler(mockMusicService);
-        saveSongHandler = new SaveSongToDbLambdaHandler(mockMusicService);
-        getAllAlbumsHandler = new GetAllAlbumsLambdaHandler(mockMusicService);
-    }
+    Album album2 = new Album();
+    album2.setId("2");
+    album2.setTitle("Album 2");
+    album2.setCoverUrl("cover2.jpg");
+    Song song3 = new Song("3", "Song3", "Artist3", 310, "path3", "cover3");
+    Song song4 = new Song("4", "Song4", "Artist4", 330, "path4", "cover4");
+    album2.setSongs(Arrays.asList(song3, song4));
+
+    List<Album> mockAlbums = Arrays.asList(album1, album2);
+
+    // 模擬 MusicService 和 AlbumDao 的行為
+    when(mockMusicService.getPresignedUrlForSongUpload(anyString(), anyString())).thenReturn("mockUrl");
+    when(mockMusicService.getPresignedUrlForCoverUpload(anyString())).thenReturn("mockCoverUrl");
+    when(mockMusicService.uploadSongToDB(anyString(), anyString(), anyString(), anyString(), anyString(), anyString())).thenReturn("mockResponse");
+    when(mockAlbumDao.findAll()).thenReturn(mockAlbums);
+
+    // 初始化 lambda handler
+    getUrlsHandler = new GetPresignedUrlsLambdaHandler(mockMusicService);
+    saveSongHandler = new SaveSongToDbLambdaHandler(mockMusicService);
+    getAllAlbumsHandler = new GetAllAlbumsLambdaHandler(mockMusicService);
+}
     // 定義一個單元測試方法來測試獲取預簽名URL的功能
     @Test
     void testGetPresignedUrls() {
@@ -134,87 +153,49 @@ class LambdaHandlersTest {
     }
 
 
-@Test
-void testGetAllAlbums() {
-    // 模擬數據
-    Album album1 = new Album(); // 初始化 album1
-    Album album2 = new Album(); // 初始化 album2
-
-    // 創建 album1 的兩首歌
-    Song song1 = new Song();
-    song1.setId("1");
-    song1.setTitle("Song1");
-    song1.setArtist("Artist1");
-    song1.setDuration(300);
-    song1.setFilePath("/path/to/file1");
-    song1.setAlbumCoverUrl("/path/to/cover1");
+    @Test
+    void testGetAllAlbums() {
+        // 創建請求事件
+        APIGatewayProxyRequestEvent requestEvent = new APIGatewayProxyRequestEvent();
+        // 調用 Lambda 處理函數
+        APIGatewayProxyResponseEvent responseEvent = getAllAlbumsHandler.handleRequest(requestEvent, context);
     
-    Song song2 = new Song();
-    song2.setId("2");
-    song2.setTitle("Song2");
-    song2.setArtist("Artist2");
-    song2.setDuration(320);
-    song2.setFilePath("/path/to/file2");
-    song2.setAlbumCoverUrl("/path/to/cover2");
+        // 驗證 HTTP 響應狀態碼
+        assertEquals(200, responseEvent.getStatusCode());
     
-    album1.setSongs(Arrays.asList(song1, song2));
-
-    // 創建 album2 的兩首歌
-    Song song3 = new Song();
-    song3.setId("3");
-    song3.setTitle("Song3");
-    song3.setArtist("Artist3");
-    song3.setDuration(310);
-    song3.setFilePath("/path/to/file3");
-    song3.setAlbumCoverUrl("/path/to/cover3");
+        // 解析響應數據
+        Type listType = new TypeToken<List<Album>>() {}.getType();
+        List<Album> responseBodyAlbums = new Gson().fromJson(responseEvent.getBody(), listType);
     
-    Song song4 = new Song();
-    song4.setId("4");
-    song4.setTitle("Song4");
-    song4.setArtist("Artist4");
-    song4.setDuration(330);
-    song4.setFilePath("/path/to/file4");
-    song4.setAlbumCoverUrl("/path/to/cover4");
+        // 驗證專輯數量
+        assertEquals(2, responseBodyAlbums.size());
     
-    album2.setSongs(Arrays.asList(song3, song4));
-
-     // 模擬 albumDao 的行為
-     List<Album> mockAlbums = Arrays.asList(album1, album2);
-
-     APIGatewayProxyRequestEvent requestEvent = new APIGatewayProxyRequestEvent();
-     APIGatewayProxyResponseEvent responseEvent = getAllAlbumsHandler.handleRequest(requestEvent, context);
-
-     // 驗證狀態碼和其他預期行為
-     assertEquals(200, responseEvent.getStatusCode());
-
-     // 解析響應體以確認返回的數據是否正確
-     Type listType = new TypeToken<List<Album>>() {}.getType(); // 添加這個來正確地解析 JSON 到 List<Album>
-     List<Album> responseBodyAlbums = new Gson().fromJson(responseEvent.getBody(), listType);
-
-     // 驗證返回的專輯列表
-     assertEquals(mockAlbums.size(), responseBodyAlbums.size());
-     // 遍歷每個專輯並驗證歌曲數量和屬性
-for (int i = 0; i < mockAlbums.size(); i++) {
-    Album expectedAlbum = mockAlbums.get(i);
-    Album actualAlbum = responseBodyAlbums.get(i);
+        // 遍歷並驗證每個專輯的屬性
+        for (int i = 0; i < responseBodyAlbums.size(); i++) {
+            Album expectedAlbum = mockAlbums.get(i);
+            Album actualAlbum = responseBodyAlbums.get(i);
     
-    // 驗證歌曲數量
-    assertEquals(expectedAlbum.getSongs().size(), actualAlbum.getSongs().size());
+            assertEquals(expectedAlbum.getId(), actualAlbum.getId());
+            assertEquals(expectedAlbum.getTitle(), actualAlbum.getTitle());
+            assertEquals(expectedAlbum.getCoverUrl(), actualAlbum.getCoverUrl());
     
-    // 遍歷歌曲並檢查屬性
-    for (int j = 0; j < expectedAlbum.getSongs().size(); j++) {
-        Song expectedSong = expectedAlbum.getSongs().get(j);
-        Song actualSong = actualAlbum.getSongs().get(j);
-        
-        // 驗證歌曲屬性
-        assertEquals(expectedSong.getId(), actualSong.getId());
-        assertEquals(expectedSong.getTitle(), actualSong.getTitle());
-        assertEquals(expectedSong.getArtist(), actualSong.getArtist());
-        assertEquals(expectedSong.getDuration(), actualSong.getDuration());
-        assertEquals(expectedSong.getFilePath(), actualSong.getFilePath());
-        assertEquals(expectedSong.getAlbumCoverUrl(), actualSong.getAlbumCoverUrl());
+            // 驗證歌曲數量
+            assertEquals(expectedAlbum.getSongs().size(), actualAlbum.getSongs().size());
+    
+            // 遍歷並驗證每首歌曲的屬性
+            for (int j = 0; j < expectedAlbum.getSongs().size(); j++) {
+                Song expectedSong = expectedAlbum.getSongs().get(j);
+                Song actualSong = actualAlbum.getSongs().get(j);
+    
+                assertEquals(expectedSong.getId(), actualSong.getId());
+                assertEquals(expectedSong.getTitle(), actualSong.getTitle());
+                assertEquals(expectedSong.getArtist(), actualSong.getArtist());
+                assertEquals(expectedSong.getDuration(), actualSong.getDuration());
+                assertEquals(expectedSong.getFilePath(), actualSong.getFilePath());
+                assertEquals(expectedSong.getAlbumCoverUrl(), actualSong.getAlbumCoverUrl());
+            }
+        }
     }
-}
-}
+    
 
 }
