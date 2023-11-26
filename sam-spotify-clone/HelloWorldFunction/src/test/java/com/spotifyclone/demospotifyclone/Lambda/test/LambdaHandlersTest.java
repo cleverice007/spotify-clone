@@ -191,6 +191,10 @@ class LambdaHandlersTest {
         APIGatewayProxyRequestEvent requestEvent = new APIGatewayProxyRequestEvent();
         // 調用 Lambda 處理函數
         APIGatewayProxyResponseEvent responseEvent = getAllAlbumsHandler.handleRequest(requestEvent, context);
+        // 輸出響應數據
+        System.out.println("HTTP Status Code: " + responseEvent.getStatusCode());
+        System.out.println("Response Body: " + responseEvent.getBody());
+
     
         // 驗證 HTTP 響應狀態碼
         assertEquals(200, responseEvent.getStatusCode());
