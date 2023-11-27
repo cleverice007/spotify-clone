@@ -112,6 +112,9 @@ class LambdaHandlersTest {
         album2.setSongs(Arrays.asList(song3, song4));
     
         List<Album> mockAlbums = Arrays.asList(album1, album2);
+        // 增加mockAlbums的輸出
+        System.out.println("Mock Albums: " + mockAlbums);
+
     
         // 模擬 MusicService 和 AlbumDao 的行為
         when(mockMusicService.getPresignedUrlForSongUpload(anyString(), anyString())).thenReturn("mockUrl");
