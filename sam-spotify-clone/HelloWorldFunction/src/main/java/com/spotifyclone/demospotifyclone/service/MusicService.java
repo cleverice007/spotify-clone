@@ -45,11 +45,19 @@ public class MusicService {
     private String bucketName;
     private AlbumDao albumDao;
 
-    public MusicService() {
-        this.bucketName = System.getenv("BUCKET_NAME");  
-        this.s3Client = S3Client.create();
-        this.albumDao = new AlbumDaoImpl();
-    }
+// 用於正常運行時使用的構造器
+public MusicService() {
+    this.bucketName = System.getenv("BUCKET_NAME");
+    this.s3Client = S3Client.create();
+    this.albumDao = new AlbumDaoImpl();
+}
+
+// 允許注入S3Client和AlbumDao的構造器，主要用於測試
+public MusicService(S3Client s3Client, AlbumDao albumDao) {
+    this.bucketName = System.getenv("BUCKET_NAME");
+    this.s3Client = s3Client;
+    this.albumDao = albumDao;
+}
 
 
     public String getPresignedUrlForSongUpload(String albumTitle, String songTitle) {
