@@ -120,7 +120,12 @@ class LambdaHandlersTest {
         when(mockMusicService.getPresignedUrlForSongUpload(anyString(), anyString())).thenReturn("mockUrl");
         when(mockMusicService.getPresignedUrlForCoverUpload(anyString())).thenReturn("mockCoverUrl");
         when(mockMusicService.uploadSongToDB(anyString(), anyString(), anyString(), anyString(), anyString(), anyString())).thenReturn("mockResponse");
+
+        System.out.println("Setting up mock behavior for AlbumDao");
         when(mockAlbumDao.findAll()).thenReturn(mockAlbums);
+        System.out.println("Mock behavior set for AlbumDao: " + mockAlbumDao.findAll());
+
+
     
         // 初始化 lambda handler
         getUrlsHandler = new GetPresignedUrlsLambdaHandler(mockMusicService);
@@ -194,6 +199,8 @@ class LambdaHandlersTest {
 
         // 使用帶參數的constructor創建 MusicService 的實例
         MusicService serviceUnderTest = new MusicService(mockS3Client, mockAlbumDao);
+        System.out.println("Mock Albums in Test: " + mockAlbums);
+
 
         // 調用 getAllAlbums() 方法並獲取結果
         List<Album> result = serviceUnderTest.getAllAlbums();
