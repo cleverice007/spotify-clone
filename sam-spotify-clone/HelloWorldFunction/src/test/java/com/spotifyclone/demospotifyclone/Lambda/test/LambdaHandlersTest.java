@@ -194,8 +194,6 @@ class LambdaHandlersTest {
 
     @Test
     void testMusicServiceGetAllAlbums() {
-        // 使用 Mockito 模擬 AlbumDao 的 findAll 方法
-        when(mockAlbumDao.findAll()).thenReturn(mockAlbums);
 
         // 使用帶參數的constructor創建 MusicService 的實例
         MusicService serviceUnderTest = new MusicService(mockS3Client, mockAlbumDao);
