@@ -25,6 +25,7 @@ public class AlbumDaoImpl implements AlbumDao {
 
     @Override
     public List<Album> findAll() {
+        System.out.println("AlbumDaoImpl: Executing findAll");
         List<Album> albums = new ArrayList<>();
         String sql = "SELECT * FROM albums";
         try (Statement statement = connection.createStatement();
@@ -35,11 +36,13 @@ public class AlbumDaoImpl implements AlbumDao {
                 album.setTitle(resultSet.getString("title"));
                 album.setCoverUrl(resultSet.getString("cover_url"));
                 albums.add(album);
+                System.out.println("AlbumDaoImpl: Found album - " + album);
             }
         } catch (SQLException e) {
+            System.out.println("AlbumDaoImpl: SQLException - " + e.getMessage());
             e.printStackTrace();
-            
         }
+        System.out.println("AlbumDaoImpl: Returning albums - " + albums);
         return albums;
     }
 

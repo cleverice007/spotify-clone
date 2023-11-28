@@ -126,9 +126,11 @@ public MusicService(S3Client s3Client, AlbumDao albumDao) {
     }
 
     public List<Album> getAllAlbums() {
-        return albumDao.findAll();
+        System.out.println("MusicService: Calling findAll on albumDao");
+        List<Album> albums = albumDao.findAll();
+        System.out.println("MusicService: Result from findAll: " + albums);
+        return albums;
     }
-
 
 
 }
