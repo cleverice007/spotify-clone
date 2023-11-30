@@ -192,41 +192,40 @@ class LambdaHandlersTest {
     }
 
     @Test
-    void testMusicServiceGetAllAlbums() {
+void testMusicServiceGetAllAlbums() {
+    // 使用帶參數的constructor創建 MusicService 的實例
+    MusicService serviceUnderTest = new MusicService(mockS3Client, mockAlbumDao);
+    System.out.println("Mock Albums in Test: " + mockAlbums);
 
-        // 使用帶參數的constructor創建 MusicService 的實例
-        MusicService serviceUnderTest = new MusicService(mockS3Client, mockAlbumDao);
-        System.out.println("Mock Albums in Test: " + mockAlbums);
+    // 調用 getAllAlbums() 方法並獲取結果
+    List<Album> result = serviceUnderTest.getAllAlbums(); 
+    System.out.println("Result: " + result);
 
+    // 斷言結果是否符合預期
+    assertNotNull(result, "Result should not be null");
+    assertEquals(mockAlbums.size(), result.size(), "Albums count should match mock data");
 
-        // 調用 getAllAlbums() 方法並獲取結果
-        List<Album> result = mockMusicService.getAllAlbums();
-        System.out.println("Result: " + result);
+    // 遍歷並驗證每個專輯的屬性
+    for (int i = 0; i < result.size(); i++) {
+        Album expectedAlbum = mockAlbums.get(i);
+        Album actualAlbum = result.get(i);
 
-        // 斷言結果是否符合預期
-        assertNotNull(result, "Result should not be null");
-        assertEquals(mockAlbums.size(), result.size(), "Albums count should match mock data");
+        assertEquals(expectedAlbum.getId(), actualAlbum.getId(), "Album ID should match");
+        assertEquals(expectedAlbum.getTitle(), actualAlbum.getTitle(), "Album title should match");
+        assertEquals(expectedAlbum.getCoverUrl(), actualAlbum.getCoverUrl(), "Album cover URL should match");
 
-        // 遍歷並驗證每個專輯的屬性
-        for (int i = 0; i < result.size(); i++) {
-            Album expectedAlbum = mockAlbums.get(i);
-            Album actualAlbum = result.get(i);
+        // 驗證歌曲數量和屬性...
+        assertEquals(expectedAlbum.getSongs().size(), actualAlbum.getSongs().size(), "Songs count should match");
+        for (int j = 0; j < expectedAlbum.getSongs().size(); j++) {
+            Song expectedSong = expectedAlbum.getSongs().get(j);
+            Song actualSong = actualAlbum.getSongs().get(j);
 
-            assertEquals(expectedAlbum.getId(), actualAlbum.getId(), "Album ID should match");
-            assertEquals(expectedAlbum.getTitle(), actualAlbum.getTitle(), "Album title should match");
-            assertEquals(expectedAlbum.getCoverUrl(), actualAlbum.getCoverUrl(), "Album cover URL should match");
-
-            // 驗證歌曲數量和屬性...
-            assertEquals(expectedAlbum.getSongs().size(), actualAlbum.getSongs().size(), "Songs count should match");
-            for (int j = 0; j < expectedAlbum.getSongs().size(); j++) {
-                Song expectedSong = expectedAlbum.getSongs().get(j);
-                Song actualSong = actualAlbum.getSongs().get(j);
-
-                assertEquals(expectedSong.getId(), actualSong.getId(), "Song ID should match");
-                assertEquals(expectedSong.getTitle(), actualSong.getTitle(), "Song title should match");
-            }
+            assertEquals(expectedSong.getId(), actualSong.getId(), "Song ID should match");
+            assertEquals(expectedSong.getTitle(), actualSong.getTitle(), "Song title should match");
         }
     }
+}
+
 
 
     @Test
