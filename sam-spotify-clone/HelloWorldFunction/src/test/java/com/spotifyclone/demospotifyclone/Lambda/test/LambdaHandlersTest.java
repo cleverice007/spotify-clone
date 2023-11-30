@@ -111,8 +111,7 @@ class LambdaHandlersTest {
     
         album2.setSongs(Arrays.asList(song3, song4));
     
-        List<Album> mockAlbums = Arrays.asList(album1, album2);
-        // 增加mockAlbums的輸出
+        mockAlbums = Arrays.asList(album1, album2);        
         System.out.println("Mock Albums: " + mockAlbums);
 
     
@@ -201,7 +200,7 @@ class LambdaHandlersTest {
 
 
         // 調用 getAllAlbums() 方法並獲取結果
-        List<Album> result = serviceUnderTest.getAllAlbums();
+        List<Album> result = mockMusicService.getAllAlbums();
         System.out.println("Result: " + result);
 
         // 斷言結果是否符合預期
